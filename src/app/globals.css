@@ -1,11 +1,11 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --color-primary: #FCF7FA;
-  --color-primary-text: #1C0D12;
+  --color-primary: #fcf7fa;
+  --color-primary-text: #1c0d12;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -40,9 +40,15 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-.bg-primary { background-color: var(--color-primary); }
-.text-primary { color: var(--color-primary-text); }
-.border-primary { border-color: var(--color-primary); }
+.bg-primary {
+  background-color: var(--color-primary);
+}
+.text-primary {
+  color: var(--color-primary-text);
+}
+.border-primary {
+  border-color: var(--color-primary);
+}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -127,4 +133,78 @@
 
 .font-epilogue {
   font-family: var(--font-epilogue), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Zigzag Path */
+@keyframes float-heart-zigzag {
+  0% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 1;
+  }
+  25% {
+    transform: translateY(-120px) translateX(20px) scale(0.9);
+  }
+  50% {
+    transform: translateY(-240px) translateX(-20px) scale(0.8);
+  }
+  75% {
+    transform: translateY(-360px) translateX(20px) scale(0.7);
+  }
+  100% {
+    transform: translateY(-480px) translateX(0) scale(0.6);
+    opacity: 0;
+  }
+}
+
+/* Wave Path */
+@keyframes float-heart-wave {
+  0% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 1;
+  }
+  25% {
+    transform: translateY(-120px) translateX(30px) scale(0.9) rotate(10deg);
+  }
+  50% {
+    transform: translateY(-240px) translateX(-30px) scale(0.8) rotate(-10deg);
+  }
+  75% {
+    transform: translateY(-360px) translateX(30px) scale(0.7) rotate(10deg);
+  }
+  100% {
+    transform: translateY(-480px) translateX(0) scale(0.6) rotate(0deg);
+    opacity: 0;
+  }
+}
+
+/* Straight Path with Spin */
+@keyframes float-heart-straight {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-240px) scale(0.8) rotate(180deg);
+  }
+  100% {
+    transform: translateY(-480px) scale(0.6) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.animate-float-heart-zigzag {
+  animation: float-heart-zigzag 4s ease-in-out forwards;
+}
+
+.animate-float-heart-wave {
+  animation: float-heart-wave 4s ease-in-out forwards;
+}
+
+.animate-float-heart-straight {
+  animation: float-heart-straight 4s ease-in-out forwards;
+}
+
+/* Add a subtle glow effect */
+.heart-glow {
+  filter: drop-shadow(0 0 8px rgba(255, 192, 203, 0.6));
 }
