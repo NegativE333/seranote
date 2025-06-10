@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+
+  sentNotes     Seranote[] @relation("SentSeranotes")
+  receivedNotes Seranote[] @relation("ReceivedSeranotes")
+  messages      Message[]
+  reactions     Reaction[]
+}
+
+model Seranote {
+  id           String   @id @default(cuid())
+  title        String
+  message      String
+  songId       String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  senderId     String
+  sender       User     @relation("SentSeranotes", fields: [senderId], references: [id])
+
+  receiverId   String?   // Optional initially
+  receiver     User?     @relation("ReceivedSeranotes", fields: [receiverId], references: [id])
+
+  isDelivered  Boolean   @default(false)
+  deliveredAt  DateTime?
+
+  accessToken  String    @unique @default(uuid()) // Link-based access
+
+  messages     Message[]
+  reactions    Reaction[]
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  content    String
+  createdAt  DateTime @default(now())
+
+  seranote   Seranote @relation(fields: [seranoteId], references: [id])
+  seranoteId String
+
+  sender     User     @relation(fields: [senderId], references: [id])
+  senderId   String
+}
+
+model Reaction {
+  id         String   @id @default(cuid())
+  type       String   // e.g., "heart", "blush", "smile"
+  createdAt  DateTime @default(now())
+
+  seranote   Seranote @relation(fields: [seranoteId], references: [id])
+  seranoteId String
+
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+}

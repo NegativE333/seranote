@@ -4,7 +4,7 @@ import { Heart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export const HeroSection = () => {
-  const images = ['/images/hero-2.png', '/images/hero-3.png'];
+  const images = ['/images/hero-2.png', '/images/hero-3.png', '/images/hero-4.png'];
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -50,7 +50,7 @@ export const HeroSection = () => {
         className="w-full h-full bg-cover bg-center bg-no-repeat flex justify-end items-end rounded-lg transition-all duration-1000 ease-linear"
         style={{ backgroundImage: `url('${images[currentImageIndex]}')` }}
       >
-        <div className="bg-gray-800/30 p-8 rounded-lg backdrop-blur-[1px] h-full w-full flex flex-col justify-end text-center md:text-left">
+        <div className="bg-gray-800/40 p-8 rounded-lg h-full w-full flex flex-col justify-end text-center md:text-left">
           <h1 className="text-white text-3xl md:text-5xl font-bold mb-4 mt-auto">
             A song, a letter, a feeling...
           </h1>

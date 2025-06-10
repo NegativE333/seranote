@@ -2,15 +2,7 @@ import type { Metadata } from 'next';
 import { Epilogue } from 'next/font/google';
 import './globals.css';
 import { Navbar } from './[components]/navbar';
-import {
-  ClerkProvider,
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignUpButton,
-  UserButton,
-} from '@clerk/nextjs';
-import Link from 'next/link';
+import { ClerkProvider } from '@clerk/nextjs';
 
 const epilogue = Epilogue({
   subsets: ['latin'],
