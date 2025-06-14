@@ -208,3 +208,21 @@
 .heart-glow {
   filter: drop-shadow(0 0 8px rgba(255, 192, 203, 0.6));
 }
+
+@keyframes float-note {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(var(--tw-scale-x, 1));
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-120px) scale(var(--tw-scale-x, 1));
+  }
+}
+
+.animate-float-note {
+  animation: float-note 2.5s linear infinite;
+}

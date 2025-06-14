@@ -1,6 +1,8 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export const HeroSection = () => {
@@ -50,13 +52,16 @@ export const HeroSection = () => {
         className="w-full h-full bg-cover bg-center bg-no-repeat flex justify-end items-end rounded-lg transition-all duration-1000 ease-linear"
         style={{ backgroundImage: `url('${images[currentImageIndex]}')` }}
       >
-        <div className="bg-gray-800/40 p-8 rounded-lg h-full w-full flex flex-col justify-end text-center md:text-left">
-          <h1 className="text-white text-3xl md:text-5xl font-bold mb-4 mt-auto">
+        <div className="bg-gray-800/40 p-8 rounded-lg h-full w-full flex flex-col justify-end text-center md:text-left gap-4">
+          <h1 className="text-white text-3xl md:text-5xl font-bold mt-auto">
             A song, a letter, a feeling...
           </h1>
           <p className="text-white text-lg md:text-xl">
             Seranote is a platform for creating and sharing songs, letters, and feelings.
           </p>
+          <Button variant={'primary'} className="w-fit">
+            <Link href={'/create'}>Create Seranote</Link>
+          </Button>
         </div>
       </div>
 
