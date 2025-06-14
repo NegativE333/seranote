@@ -38,12 +38,12 @@ export const HeroSection = () => {
   }, []);
 
   return (
-    <div className="flex flex-col-reverse md:flex-row justify-between w-full h-[70vh] overflow-hidden rounded-lg">
-      <div className="flex flex-col gap-4 justify-center h-full">
-        <h1 className="text-6xl font-bold bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent leading-tight">
+    <div className="flex flex-col-reverse md:flex-row justify-between w-full md:h-[70vh] overflow-hidden rounded-lg">
+      <div className="flex flex-col gap-4 justify-center items-center md:items-start h-full mt-4 md:mt-0">
+        <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent leading-tight text-center md:text-left">
           A song, a letter, <br /> a feeling...
         </h1>
-        <p className="text-xl font-medium bg-gradient-to-br from-pink-500 to-purple-600 bg-clip-text text-transparent">
+        <p className="text-lg md:text-xl font-medium bg-gradient-to-br from-pink-500 to-purple-600 bg-clip-text text-transparent text-center md:text-left">
           Seranote is a platform for creating and sharing songs, letters, and feelings.
         </p>
         <Button
@@ -64,7 +64,7 @@ export const HeroSection = () => {
         {hearts.map((heart) => (
           <div
             key={heart.id}
-            className={`absolute bottom-12 animate-float-heart-${heart.path}`}
+            className={`absolute bottom-2 md:bottom-[64px] animate-float-heart-${heart.path}`}
             style={{
               left: `${heart.left}%`,
               animationDelay: `${heart.delay}s`,
