@@ -39,19 +39,19 @@ export const HeroSection = () => {
 
   return (
     <div className="flex flex-col-reverse md:flex-row justify-between w-full md:h-[70vh] overflow-hidden rounded-lg">
-      <div className="flex flex-col gap-4 justify-center items-center md:items-start h-full mt-4 md:mt-0">
-        <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent leading-tight text-center md:text-left">
+      <div className="flex flex-col gap-4 justify-center items-center md:items-start h-full mt-4 md:mt-0 md:max-w-[50%]">
+        <h1 className="text-4xl md:text-6xl font-bold primary-gradient leading-tight text-center md:text-left">
           A song, a letter, <br /> a feeling...
         </h1>
-        <p className="text-lg md:text-xl font-medium bg-gradient-to-br from-pink-500 to-purple-600 bg-clip-text text-transparent text-center md:text-left">
-          Seranote is a platform for creating and sharing songs, letters, and feelings.
+        <p className="text-lg md:text-xl font-medium secondary-gradient text-center md:text-left">
+          Turn unsent thoughts into something beautiful — a note they’ll remember, and a song
+          they’ll never forget.
         </p>
-        <Button
-          variant={'primary'}
-          className="w-fit bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white border-0 mt-4"
-        >
-          <Link href={'/create'}>Create Seranote</Link>
-        </Button>
+        <Link href={'/create'}>
+          <Button variant={'primary'} className="mt-4">
+            Create Seranote
+          </Button>
+        </Link>
       </div>
       <div className="h-full relative">
         <Image

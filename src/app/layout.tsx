@@ -33,7 +33,7 @@ export default function RootLayout({
           className={`${epilogue.variable} antialiased bg-primary font-epilogue max-w-[1440px] mx-auto`}
         >
           <Navbar />
-          {children}
+          <div className="mt-[64px]">{children}</div>
         </body>
       </html>
     </ClerkProvider>

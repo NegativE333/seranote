@@ -17,10 +17,11 @@ const buttonVariants = cva(
         secondary: 'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline',
-        primary: 'bg-[#EB4770] text-md text-white',
+        primary:
+          'bg-gradient-to-r from-gray-700 to-purple-700 hover:from-gray-800 hover:to-purple-800 text-white border-0 relative overflow-hidden group text-md text-white',
       },
       size: {
-        default: 'h-9 px-4 py-6 has-[>svg]:px-3',
+        default: 'h-9 px-4 py-6 has-[>svg]:px-3 cursor-pointer',
         sm: 'h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5',
         lg: 'h-10 rounded-md px-6 has-[>svg]:px-4',
         icon: 'size-9',
@@ -38,6 +39,7 @@ function Button({
   variant,
   size,
   asChild = false,
+  children,
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
@@ -50,7 +52,16 @@ function Button({
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
-    />
+    >
+      {variant === 'primary' ? (
+        <>
+          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 via-white/30 via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-800 ease-out"></span>
+          <span className="relative z-10">{children}</span>
+        </>
+      ) : (
+        children
+      )}
+    </Comp>
   );
 }
 
