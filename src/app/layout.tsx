@@ -1,17 +1,13 @@
 import type { Metadata } from 'next';
-import { Epilogue } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import './globals.css';
-import { Navbar } from './[components]/navbar';
 import { ClerkProvider } from '@clerk/nextjs';
 
-const epilogue = Epilogue({
-  subsets: ['latin'],
-  variable: '--font-epilogue',
-});
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Seranote',
-  description: 'A song, a letter, a feeling...',
+  description: 'Need to change this',
 };
 
 export default function RootLayout({
@@ -28,13 +24,8 @@ export default function RootLayout({
         },
       }}
     >
-      <html lang="en" className={epilogue.variable} suppressHydrationWarning>
-        <body
-          className={`${epilogue.variable} antialiased bg-primary font-epilogue max-w-[1440px] mx-auto`}
-        >
-          <Navbar />
-          {children}
-        </body>
+      <html lang="en" suppressHydrationWarning>
+        <body className={`${inter.className} antialiased`}>{children}</body>
       </html>
     </ClerkProvider>
   );
