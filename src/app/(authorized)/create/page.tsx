@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { motion } from "motion/react";
-import { NoteForm } from "./note-form";
+import React, { useState } from 'react';
+import { motion } from 'motion/react';
+import { NoteForm } from './note-form';
 
 interface Song {
   id: string;
@@ -12,9 +12,9 @@ interface Song {
 
 // --- Main Form Page Component ---
 export default function CreateNotePage() {
-  const [title, setTitle] = useState("");
-  const [message, setMessage] = useState("");
-  const [email, setEmail] = useState("");
+  const [title, setTitle] = useState('');
+  const [message, setMessage] = useState('');
+  const [email, setEmail] = useState('');
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 

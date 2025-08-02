@@ -1,13 +1,9 @@
-"use client";
+'use client';
 
-import { AuroraBackground } from "../[components]/aurora-background";
-import { Sidebar } from "../[components]/sidebar";
+import { AuroraBackground } from '../[components]/aurora-background';
+import { Sidebar } from '../[components]/sidebar';
 
-export default function AuthorizedLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AuthorizedLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg text-gray-300 font-sans antialiased">
       <AuroraBackground />

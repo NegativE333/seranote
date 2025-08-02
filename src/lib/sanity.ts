@@ -1,5 +1,5 @@
-import { createClient } from "next-sanity";
-import imageUrlBuilder from "@sanity/image-url";
+import { createClient } from 'next-sanity';
+import imageUrlBuilder from '@sanity/image-url';
 
 export const client = createClient({
   apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION,

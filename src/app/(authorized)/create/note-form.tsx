@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { motion } from "motion/react";
-import { MusicIcon } from "lucide-react";
-import { SongSelectModal } from "./song-select-modal";
+import { useState } from 'react';
+import { motion } from 'motion/react';
+import { MusicIcon } from 'lucide-react';
+import { SongSelectModal } from './song-select-modal';
 
 interface Song {
   id: string;
@@ -10,9 +10,9 @@ interface Song {
 }
 
 export const NoteForm = () => {
-  const [title, setTitle] = useState("");
-  const [message, setMessage] = useState("");
-  const [email, setEmail] = useState("");
+  const [title, setTitle] = useState('');
+  const [message, setMessage] = useState('');
+  const [email, setEmail] = useState('');
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -27,22 +27,17 @@ export const NoteForm = () => {
         className="w-full max-w-2xl mx-auto"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
       >
         <div className="bg-black/30 border border-white/10 rounded-2xl backdrop-blur-xl p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-white">Create a New Note</h1>
-            <p className="text-gray-400 mt-2">
-              Pour your heart out. Your words are safe here.
-            </p>
+            <p className="text-gray-400 mt-2">Pour your heart out. Your words are safe here.</p>
           </div>
 
           <form className="space-y-6">
             <div>
-              <label
-                htmlFor="title"
-                className="block text-sm font-medium text-gray-300 mb-2"
-              >
+              <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-2">
                 Title
               </label>
               <input
@@ -56,10 +51,7 @@ export const NoteForm = () => {
             </div>
 
             <div>
-              <label
-                htmlFor="message"
-                className="block text-sm font-medium text-gray-300 mb-2"
-              >
+              <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
                 Message
               </label>
               <textarea
@@ -73,9 +65,7 @@ export const NoteForm = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Song
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Song</label>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(true)}
@@ -85,12 +75,8 @@ export const NoteForm = () => {
                   <div className="flex items-center gap-3">
                     <MusicIcon className="w-5 h-5 text-purple-400" />
                     <div>
-                      <p className="font-medium text-white/90">
-                        {selectedSong.title}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {selectedSong.artist}
-                      </p>
+                      <p className="font-medium text-white/90">{selectedSong.title}</p>
+                      <p className="text-xs text-gray-500">{selectedSong.artist}</p>
                     </div>
                   </div>
                 ) : (
@@ -101,10 +87,7 @@ export const NoteForm = () => {
             </div>
 
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-300 mb-2"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
                 Recipient's Email (Optional)
               </label>
               <input
@@ -123,7 +106,7 @@ export const NoteForm = () => {
                 className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-3 px-8 rounded-lg text-base shadow-lg shadow-purple-800/20"
                 whileHover={{
                   scale: 1.02,
-                  boxShadow: "0px 0px 20px rgba(192, 38, 211, 0.4)",
+                  boxShadow: '0px 0px 20px rgba(192, 38, 211, 0.4)',
                 }}
                 whileTap={{ scale: 0.98 }}
               >
