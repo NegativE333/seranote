@@ -9,15 +9,25 @@ interface Song {
   artist: string;
 }
 
+const CLIP_DURATION = 114;
+
+const formatTime = (time: number) => {
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+};
+
 export const NoteForm = () => {
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
   const [email, setEmail] = useState('');
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
+  const [clipStart, setClipStart] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleSelectSong = (song: Song) => {
+  const handleSelectSong = (song: any, selectedTime?: number) => {
     setSelectedSong(song);
+    setClipStart(selectedTime ?? 0);
     setIsModalOpen(false);
   };
 
@@ -77,6 +87,11 @@ export const NoteForm = () => {
                     <div>
                       <p className="font-medium text-white/90">{selectedSong.title}</p>
                       <p className="text-xs text-gray-500">{selectedSong.artist}</p>
+                      {clipStart !== null && (
+                        <p className="text-xs text-gray-400">
+                          Clip: {formatTime(clipStart)} - {formatTime(clipStart + CLIP_DURATION)}
+                        </p>
+                      )}
                     </div>
                   </div>
                 ) : (
