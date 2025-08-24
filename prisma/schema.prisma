@@ -31,6 +31,10 @@ model Seranote {
   title        String
   message      String
   songId       String
+  songClipStart  Int      @default(0)     // seconds
+  songClipDur    Int      @default(114)   // seconds (max 114)
+  songTotalDur   Int?                      // optional: full track duration (seconds)
+
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
