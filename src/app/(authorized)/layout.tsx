@@ -1,5 +1,6 @@
 'use client';
 
+import { Toaster } from '@/components/ui/sonner';
 import { AuroraBackground } from '../[components]/aurora-background';
 import { Sidebar } from '../[components]/sidebar';
 
@@ -14,6 +15,7 @@ export default function AuthorizedLayout({ children }: { children: React.ReactNo
           <div>{children}</div>
         </div>
       </main>
+      <Toaster />
     </div>
   );
 }

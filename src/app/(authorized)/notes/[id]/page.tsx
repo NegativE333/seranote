@@ -143,13 +143,12 @@ export default function SeranoteDetailPage() {
 
       setTimeout(() => {
         if (audioElement && !isPlaying) {
-          // audioElement
-          //   .play()
-          //   .then(() => {
-          //     setIsPlaying(true);
-          //   })
-          //   .catch(() => {
-          //   });
+          audioElement
+            .play()
+            .then(() => {
+              setIsPlaying(true);
+            })
+            .catch(() => {});
         }
       }, 1000);
     }
@@ -285,7 +284,7 @@ export default function SeranoteDetailPage() {
 
             <div className="flex flex-col gap-1.5">
               <h3 className="text-xl font-semibold text-white leading-none">{song.title}</h3>
-              <p className="text-white/90 leading-none">{song.artist}</p>
+              <p className="text-sm text-white/90 leading-none">{song.artist}</p>
               <p className="text-sm text-white/80 leading-none">{song.album}</p>
               <div className="text-xs text-white/70">
                 <span className="font-medium">
