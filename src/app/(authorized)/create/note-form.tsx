@@ -7,9 +7,10 @@ interface Song {
   id: string;
   title: string;
   artist: string;
+  audioDur?: number; // optional from Sanity
 }
 
-const CLIP_DURATION = 114;
+const DEFAULT_CLIP_DURATION = 114;
 
 const formatTime = (time: number) => {
   const minutes = Math.floor(time / 60);
@@ -23,12 +24,55 @@ export const NoteForm = () => {
   const [email, setEmail] = useState('');
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [clipStart, setClipStart] = useState<number | null>(null);
+  const [clipDuration, setClipDuration] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSelectSong = (song: any, selectedTime?: number) => {
+  // Expecting SongSelectModal to call onSelectSong(song, start, duration)
+  const handleSelectSong = (song: any, selectedStart?: number, selectedDuration?: number) => {
     setSelectedSong(song);
-    setClipStart(selectedTime ?? 0);
+    setClipStart(selectedStart ?? 0);
+    setClipDuration(selectedDuration ?? DEFAULT_CLIP_DURATION);
     setIsModalOpen(false);
+  };
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedSong) return;
+
+    try {
+      setSubmitting(true);
+      const res = await fetch('/api/seranotes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          message,
+          songId: selectedSong.id,
+          songClipStart: clipStart ?? 0,
+          songClipDur: clipDuration ?? DEFAULT_CLIP_DURATION,
+          songTotalDur: selectedSong.audioDur ?? null,
+          // receiverId: optionalUserIdFromLookup
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to save note');
+      }
+      // Optionally reset or navigate
+      setTitle('');
+      setMessage('');
+      setEmail('');
+      setSelectedSong(null);
+      setClipStart(null);
+      setClipDuration(null);
+      alert('Note saved');
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || 'Error');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -45,7 +89,7 @@ export const NoteForm = () => {
             <p className="text-gray-400 mt-2">Pour your heart out. Your words are safe here.</p>
           </div>
 
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={onSubmit}>
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-2">
                 Title
@@ -57,6 +101,7 @@ export const NoteForm = () => {
                 onChange={(e) => setTitle(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                 placeholder="A title for your thoughts..."
+                required
               />
             </div>
 
@@ -71,6 +116,7 @@ export const NoteForm = () => {
                 onChange={(e) => setMessage(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                 placeholder="Write what you can't say..."
+                required
               />
             </div>
 
@@ -87,9 +133,9 @@ export const NoteForm = () => {
                     <div>
                       <p className="font-medium text-white/90">{selectedSong.title}</p>
                       <p className="text-xs text-gray-500">{selectedSong.artist}</p>
-                      {clipStart !== null && (
+                      {clipStart !== null && clipDuration !== null && (
                         <p className="text-xs text-gray-400">
-                          Clip: {formatTime(clipStart)} - {formatTime(clipStart + CLIP_DURATION)}
+                          Clip: {formatTime(clipStart)} - {formatTime(clipStart + clipDuration)}
                         </p>
                       )}
                     </div>
@@ -118,14 +164,12 @@ export const NoteForm = () => {
             <div className="pt-4">
               <motion.button
                 type="submit"
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-3 px-8 rounded-lg text-base shadow-lg shadow-purple-800/20"
-                whileHover={{
-                  scale: 1.02,
-                  boxShadow: '0px 0px 20px rgba(192, 38, 211, 0.4)',
-                }}
+                disabled={submitting || !selectedSong}
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-3 px-8 rounded-lg text-base shadow-lg shadow-purple-800/20 disabled:opacity-50"
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                Send Note
+                {submitting ? 'Saving…' : 'Send Note'}
               </motion.button>
             </div>
           </form>

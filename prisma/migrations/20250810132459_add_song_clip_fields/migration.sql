@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Seranote" ADD COLUMN     "songClipDur" INTEGER NOT NULL DEFAULT 114,
+ADD COLUMN     "songClipStart" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "songTotalDur" INTEGER;
