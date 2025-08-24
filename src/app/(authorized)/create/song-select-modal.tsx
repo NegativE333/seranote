@@ -35,7 +35,7 @@ interface songsData {
 interface SongSelectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectSong: (song: Song, selectedTime?: number) => void;
+  onSelectSong: (song: Song, startTime: number, duration: number) => void;
 }
 
 // Fetch function for songs
@@ -96,8 +96,8 @@ export const SongSelectModal: FC<SongSelectModalProps> = ({ isOpen, onClose, onS
     setShowDurationModal(true);
   };
 
-  const handleDurationConfirm = (song: Song, selectedTime: number) => {
-    onSelectSong(song, selectedTime);
+  const handleDurationConfirm = (song: Song, selectedTime: number, duration: number) => {
+    onSelectSong(song, selectedTime, duration);
     setShowDurationModal(false);
     setSelectedSongForDuration(null);
   };
