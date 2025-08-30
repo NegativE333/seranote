@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import { ArrowLeft, Play, Pause, MusicIcon } from 'lucide-react';
 import { urlFor } from '@/lib/sanity';
+import LoadingComponent from './loading-component';
+import { ErrorComponent } from './error-component';
 
 interface Seranote {
   id: string;
@@ -190,19 +192,12 @@ export default function SeranoteDetailPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-      </div>
-    );
+    return <LoadingComponent />;
   }
 
   if (error || !seranote) {
     return (
-      <div className="text-center py-20">
-        <h2 className="text-2xl font-bold text-red-400 mb-2">Error loading seranote</h2>
-        <p className="text-gray-400">{error || 'Seranote not found'}</p>
-      </div>
+      <ErrorComponent title="Error loading seranote" message={error || 'Seranote not found'} />
     );
   }
 
