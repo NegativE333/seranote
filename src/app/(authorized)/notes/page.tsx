@@ -1,94 +1,78 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 import { NoteCard } from './note-card';
 import { motion } from 'motion/react';
 
+interface Seranote {
+  id: string;
+  title: string;
+  message: string;
+  songId: string;
+  songClipStart: number;
+  songClipDur: number;
+  songTotalDur?: number;
+  createdAt: string;
+  updatedAt: string;
+  senderId: string;
+  receiverId?: string;
+  isDelivered: boolean;
+  deliveredAt?: string;
+  accessToken: string;
+}
+
 export default function NotesPage() {
-  const [notes] = useState([
-    {
-      id: '1',
-      title: 'For the moments we almost had',
-      snippet:
-        "I find myself replaying the conversations, the silences, the maybes. It's a film I've seen a thousand times...",
-      song: 'Clair de Lune',
-      artist: 'Claude Debussy',
-      date: 'Aug 1, 2025',
-      views: 12,
-    },
-    {
-      id: '2',
-      title: 'A Tuesday afternoon reminder',
-      snippet:
-        'Just a quick note to say I was thinking of you. The sky is the same color as your eyes today.',
-      song: 'Ribs',
-      artist: 'Lorde',
-      date: 'Jul 28, 2025',
-      views: 1,
-    },
-    {
-      id: '3',
-      title: 'Maybe in another life',
-      snippet:
-        "Perhaps we meet again, as different people in a different time, and this time, it's right.",
-      song: 'Sparks',
-      artist: 'Coldplay',
-      date: 'Jul 15, 2025',
-      views: 0,
-    },
-    {
-      id: '4',
-      title: 'The Coffee Shop',
-      snippet:
-        "You were there again today, same order, same quiet corner. I wonder what you're reading.",
-      song: 'Coffee',
-      artist: 'beabadoobee',
-      date: 'Jul 5, 2025',
-      views: 28,
-    },
-    {
-      id: '5',
-      title: 'The Coffee Shop',
-      snippet:
-        "You were there again today, same order, same quiet corner. I wonder what you're reading.",
-      song: 'Coffee',
-      artist: 'beabadoobee',
-      date: 'Jul 5, 2025',
-      views: 28,
-    },
-    {
-      id: '6',
-      title: 'The Coffee Shop',
-      snippet:
-        "You were there again today, same order, same quiet corner. I wonder what you're reading.",
-      song: 'Coffee',
-      artist: 'beabadoobee',
-      date: 'Jul 5, 2025',
-      views: 28,
-    },
-    {
-      id: '7',
-      title: 'The Coffee Shop',
-      snippet:
-        "You were there again today, same order, same quiet corner. I wonder what you're reading.",
-      song: 'Coffee',
-      artist: 'beabadoobee',
-      date: 'Jul 5, 2025',
-      views: 28,
-    },
-    {
-      id: '8',
-      title: 'The Coffee Shop',
-      snippet:
-        "You were there again today, same order, same quiet corner. I wonder what you're reading.",
-      song: 'Coffee',
-      artist: 'beabadoobee',
-      date: 'Jul 5, 2025',
-      views: 28,
-    },
-  ]);
+  const { user } = useUser();
+  const router = useRouter();
+  const [notes, setNotes] = useState<Seranote[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      if (!user) return;
+
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/seranotes');
+        if (!response.ok) throw new Error('Failed to fetch notes');
+
+        const data = await response.json();
+        setNotes(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch notes');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchNotes();
+  }, [user]);
+
+  const handleNoteClick = (noteId: string) => {
+    router.push(`/notes/${noteId}`);
+  };
 
   const hasNotes = notes.length > 0;
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-20">
+        <h2 className="text-2xl font-bold text-red-400 mb-2">Error loading notes</h2>
+        <p className="text-gray-400">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -101,7 +85,22 @@ export default function NotesPage() {
       {hasNotes ? (
         <div className="space-y-4">
           {notes.map((note, index) => (
-            <NoteCard key={note.id} note={note} index={index} />
+            <div key={note.id} onClick={() => handleNoteClick(note.id)}>
+              <NoteCard
+                note={{
+                  id: note.id,
+                  title: note.title,
+                  snippet: note.message,
+                  date: new Date(note.createdAt).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  }),
+                  views: 0,
+                }}
+                index={index}
+              />
+            </div>
           ))}
         </div>
       ) : (

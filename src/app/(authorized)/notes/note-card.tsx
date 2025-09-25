@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { MusicIcon, LinkIcon, TrashIcon } from 'lucide-react';
+import { LinkIcon, TrashIcon } from 'lucide-react';
 import { useState } from 'react';
 
 export const NoteCard = ({ note, index }: { note: any; index: number }) => {
@@ -39,11 +39,9 @@ export const NoteCard = ({ note, index }: { note: any; index: number }) => {
 
   const handleClick = () => {
     if (isLocked) {
-      // If it's locked, unlock it AND collapse it.
       setIsLocked(false);
       setIsExpanded(false);
     } else {
-      // If it's not locked, lock it and ensure it's expanded.
       setIsLocked(true);
       setIsExpanded(true);
     }
@@ -88,15 +86,8 @@ export const NoteCard = ({ note, index }: { note: any; index: number }) => {
             >
               <p className="text-sm text-gray-400 pt-4 border-t border-white/10">{note.snippet}</p>
               <div className="mt-4 flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <MusicIcon className="w-5 h-5 text-purple-400" />
-                  <div>
-                    <p className="text-sm font-medium text-white/80">{note.song}</p>
-                    <p className="text-xs text-gray-500">{note.artist}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button className="p-2 rounded-full text-gray-400 hover:text-white hover:bg-white/10">
+                <div className="flex">
+                  <button className="ml-auto p-2 rounded-full text-gray-400 hover:text-white hover:bg-white/10">
                     <LinkIcon className="w-4 h-4" />
                   </button>
                   <button className="p-2 rounded-full text-gray-400 hover:text-white hover:bg-white/10">

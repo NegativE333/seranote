@@ -7,11 +7,9 @@ export async function POST(req: Request) {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // Get user details from Clerk
     const user = await currentUser();
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
-    // Ensure user exists in database
     const primaryEmail = user.emailAddresses[0]?.emailAddress;
     if (primaryEmail) {
       await prisma.user.upsert({
@@ -59,6 +57,26 @@ export async function POST(req: Request) {
     return NextResponse.json(seranote);
   } catch (error) {
     console.error('Error creating seranote:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function GET(req: Request) {
+  try {
+    const { userId } = await auth();
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const seranotes = await prisma.seranote.findMany({
+      where: { senderId: userId },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        sender: true,
+      },
+    });
+
+    return NextResponse.json(seranotes);
+  } catch (error) {
+    console.error('Error fetching seranotes:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
