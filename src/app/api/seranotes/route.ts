@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       songClipStart,
       songClipDur,
       songTotalDur,
-      receiverId,
+      receiverEmail,
     } = body || {};
 
     if (!title || !message || !songId) {
@@ -49,8 +49,8 @@ export async function POST(req: Request) {
         songClipStart: songClipStart || 0,
         songClipDur: songClipDur || 114,
         songTotalDur: songTotalDur || null,
-        senderId: userId,
-        receiverId: receiverId || null,
+        senderEmail: primaryEmail,
+        receiverEmail: receiverEmail || null,
       },
     });
 
@@ -66,11 +66,33 @@ export async function GET(req: Request) {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+    const user = await currentUser();
+    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+
+    const primaryEmail = user.emailAddresses[0]?.emailAddress;
+    if (!primaryEmail) return NextResponse.json({ error: 'User email not found' }, { status: 400 });
+
+    const url = new URL(req.url);
+    const type = url.searchParams.get('type') || 'sent';
+
+    let whereClause;
+    if (type === 'received') {
+      whereClause = { receiverEmail: primaryEmail };
+    } else {
+      whereClause = { senderEmail: primaryEmail };
+    }
+
     const seranotes = await prisma.seranote.findMany({
-      where: { senderId: userId },
+      where: whereClause,
       orderBy: { createdAt: 'desc' },
       include: {
-        sender: true,
+        sender: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 

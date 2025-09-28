@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { NoteCard } from './note-card';
+import { NoteCard } from '../notes/note-card';
 import { motion } from 'motion/react';
+import { InboxIcon } from 'lucide-react';
 
 interface Seranote {
   id: string;
@@ -28,7 +29,7 @@ interface Seranote {
   };
 }
 
-export default function NotesPage() {
+export default function ReceivedNotesPage() {
   const { user } = useUser();
   const router = useRouter();
   const [notes, setNotes] = useState<Seranote[]>([]);
@@ -36,24 +37,24 @@ export default function NotesPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchNotes = async () => {
+    const fetchReceivedNotes = async () => {
       if (!user) return;
 
       try {
         setIsLoading(true);
-        const response = await fetch('/api/seranotes?type=sent');
-        if (!response.ok) throw new Error('Failed to fetch notes');
+        const response = await fetch('/api/seranotes?type=received');
+        if (!response.ok) throw new Error('Failed to fetch received notes');
 
         const data = await response.json();
         setNotes(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch notes');
+        setError(err instanceof Error ? err.message : 'Failed to fetch received notes');
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchNotes();
+    fetchReceivedNotes();
   }, [user]);
 
   const handleNoteClick = (noteId: string) => {
@@ -73,7 +74,7 @@ export default function NotesPage() {
   if (error) {
     return (
       <div className="text-center py-20">
-        <h2 className="text-2xl font-bold text-red-400 mb-2">Error loading notes</h2>
+        <h2 className="text-2xl font-bold text-red-400 mb-2">Error loading received notes</h2>
         <p className="text-gray-400">{error}</p>
       </div>
     );
@@ -85,8 +86,9 @@ export default function NotesPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <h1 className="text-3xl font-bold text-white mb-2">My Notes</h1>
-      <p className="text-gray-400 mb-8">Your personal collection of unspoken words and melodies.</p>
+      <h1 className="text-3xl font-bold text-white mb-2">Received Notes</h1>
+      <p className="text-gray-400 mb-8">Notes that others have shared with you.</p>
+      
       {hasNotes ? (
         <div className="space-y-4">
           {notes.map((note, index) => (
@@ -102,6 +104,7 @@ export default function NotesPage() {
                     year: 'numeric',
                   }),
                   views: 0,
+                  sender: note.sender,
                 }}
                 index={index}
               />
@@ -110,9 +113,12 @@ export default function NotesPage() {
         </div>
       ) : (
         <div className="text-center py-20">
-          <h2 className="text-2xl font-bold text-white/90 mb-2">Your journal is empty</h2>
+          <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+            <InboxIcon className="w-8 h-8 text-gray-400" />
+          </div>
+          <h2 className="text-2xl font-bold text-white/90 mb-2">No received notes yet</h2>
           <p className="text-gray-400 max-w-sm mx-auto">
-            This is your private space. Create your first note to get started.
+            Notes shared with you will appear here. Share your first note with someone to get started!
           </p>
         </div>
       )}

@@ -68,7 +68,14 @@ export const NoteCard = ({ note, index }: { note: any; index: number }) => {
 
       <div className="p-6 pl-8">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-white/90">{note.title}</h3>
+          <div>
+            <h3 className="text-lg font-semibold text-white/90">{note.title}</h3>
+            {note.sender && (
+              <p className="text-sm text-purple-400 mt-1">
+                from {note.sender.name || note.sender.email}
+              </p>
+            )}
+          </div>
           <div className="flex items-center gap-2 text-gray-400">
             <span className="text-xs">{note.date}</span>
           </div>

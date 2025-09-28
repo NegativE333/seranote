@@ -21,7 +21,6 @@ model User {
   createdAt DateTime @default(now())
 
   sentNotes     Seranote[] @relation("SentSeranotes")
-  receivedNotes Seranote[] @relation("ReceivedSeranotes")
   messages      Message[]
   reactions     Reaction[]
 }
@@ -38,11 +37,10 @@ model Seranote {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  senderId     String
-  sender       User     @relation("SentSeranotes", fields: [senderId], references: [id])
+  senderEmail     String
+  sender          User     @relation("SentSeranotes", fields: [senderEmail], references: [email])
 
-  receiverId   String?   // Optional initially
-  receiver     User?     @relation("ReceivedSeranotes", fields: [receiverId], references: [id])
+  receiverEmail   String?   // Optional initially - can be any email, doesn't need to exist in User table
 
   isDelivered  Boolean   @default(false)
   deliveredAt  DateTime?
@@ -61,8 +59,8 @@ model Message {
   seranote   Seranote @relation(fields: [seranoteId], references: [id])
   seranoteId String
 
-  sender     User     @relation(fields: [senderId], references: [id])
-  senderId   String
+  sender     User     @relation(fields: [senderEmail], references: [email])
+  senderEmail String
 }
 
 model Reaction {
@@ -73,6 +71,6 @@ model Reaction {
   seranote   Seranote @relation(fields: [seranoteId], references: [id])
   seranoteId String
 
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String
+  user       User     @relation(fields: [userEmail], references: [email])
+  userEmail  String
 }
