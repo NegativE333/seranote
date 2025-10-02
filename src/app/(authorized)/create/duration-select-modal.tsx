@@ -49,7 +49,6 @@ export const DurationSelectModal: FC<DurationSelectModalProps> = ({
   song,
   onConfirmDuration,
 }) => {
-  console.log(song);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [trackDur, setTrackDur] = useState<number>(0);

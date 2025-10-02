@@ -23,6 +23,7 @@ model User {
   sentNotes     Seranote[] @relation("SentSeranotes")
   messages      Message[]
   reactions     Reaction[]
+  readStatus    UserSeranoteRead[]
 }
 
 model Seranote {
@@ -49,12 +50,15 @@ model Seranote {
 
   messages     Message[]
   reactions    Reaction[]
+  readStatus   UserSeranoteRead[]
 }
 
 model Message {
   id         String   @id @default(cuid())
   content    String
   createdAt  DateTime @default(now())
+  isRead     Boolean  @default(false)
+  readAt     DateTime?
 
   seranote   Seranote @relation(fields: [seranoteId], references: [id])
   seranoteId String
@@ -73,4 +77,18 @@ model Reaction {
 
   user       User     @relation(fields: [userEmail], references: [email])
   userEmail  String
+}
+
+model UserSeranoteRead {
+  id          String   @id @default(cuid())
+  userEmail   String
+  seranoteId  String
+  lastReadAt  DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user      User     @relation(fields: [userEmail], references: [email])
+  seranote  Seranote @relation(fields: [seranoteId], references: [id])
+
+  @@unique([userEmail, seranoteId])
 }

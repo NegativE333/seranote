@@ -10,6 +10,7 @@ import { ErrorComponent } from './error-component';
 import MessageList from './message-list';
 import MessageInput from './message-input';
 import { useUser } from '@clerk/nextjs';
+import { useMessages } from '@/hooks/use-messages';
 
 interface Message {
   id: string;
@@ -82,11 +83,24 @@ export default function SeranoteDetailPage() {
   const [currentTime, setCurrentTime] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [isClipFinished, setIsClipFinished] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isSendingMessage, setIsSendingMessage] = useState(false);
-  const [messagesLoading, setMessagesLoading] = useState(false);
+  // Remove old message state - will use hook instead
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Get user email for messages hook
+  const userEmail = user?.primaryEmailAddress?.emailAddress || '';
+
+  // Use messages hook for real-time messaging
+  const {
+    messages,
+    isLoading: messagesLoading,
+    sendMessage,
+    isSending: isSendingMessage,
+    markAsRead,
+  } = useMessages({
+    seranoteId: params.id as string,
+    userEmail,
+  });
 
   useEffect(() => {
     const fetchSeranote = async () => {
@@ -97,7 +111,6 @@ export default function SeranoteDetailPage() {
 
         const data = await response.json();
         setSeranote(data);
-        setMessages(data.messages || []);
         setIsClipFinished(false); // Reset clip finished state for new note
 
         if (data.songId) {
@@ -115,31 +128,13 @@ export default function SeranoteDetailPage() {
     }
   }, [params.id]);
 
-  // Periodic message refresh
+  // Mark messages as read when component mounts or when user views messages
   useEffect(() => {
-    if (!seranote?.id) return;
-
-    const fetchMessages = async () => {
-      try {
-        const response = await fetch(`/api/seranotes/${seranote.id}/messages`);
-        if (response.ok) {
-          const data = await response.json();
-          setMessages(data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch messages:', error);
-      }
-    };
-
-    // Fetch messages immediately
-    fetchMessages();
-
-    // Set up interval to fetch messages every 3 seconds
-    const interval = setInterval(fetchMessages, 3000);
-
-    // Cleanup interval on unmount or when seranote changes
-    return () => clearInterval(interval);
-  }, [seranote?.id]);
+    if (messages.length > 0 && userEmail) {
+      // Mark messages as read when user views the conversation
+      markAsRead();
+    }
+  }, [messages.length, userEmail, markAsRead]);
 
   const fetchSongData = async (songId: string) => {
     try {
@@ -163,14 +158,11 @@ export default function SeranoteDetailPage() {
 
         if (foundSong.audioLink) {
           const url = constructAudioUrl(foundSong.audioLink);
-          console.log('Audio URL constructed:', url);
           setAudioUrl(url);
-        } else {
-          console.log('No audio link found for song:', foundSong);
         }
       }
     } catch (err) {
-      console.error('Error fetching song data:', err);
+      console.log('error fetching song data', err);
     }
   };
 
@@ -183,9 +175,6 @@ export default function SeranoteDetailPage() {
     }
 
     if (audioUrl && seranote) {
-      console.log('Creating audio element with URL:', audioUrl);
-      console.log('Seranote clip start:', seranote.songClipStart, 'duration:', seranote.songClipDur);
-      
       const audioElement = new Audio();
       audioElement.src = audioUrl;
       audioElement.preload = 'metadata';
@@ -212,13 +201,11 @@ export default function SeranoteDetailPage() {
       };
 
       const handleLoadedMetadata = () => {
-        console.log('Audio metadata loaded, setting currentTime and attempting auto-play');
         audioElement.currentTime = seranote.songClipStart;
         
         // Simple auto-play - try immediately
         audioElement.play()
           .then(() => {
-            console.log('Auto-play successful');
             setIsPlaying(true);
           })
           .catch((error) => {
@@ -232,14 +219,11 @@ export default function SeranoteDetailPage() {
       };
 
       const handleCanPlay = () => {
-        console.log('Audio can play, attempting auto-play');
         audioElement.play()
           .then(() => {
-            console.log('CanPlay auto-play successful');
             setIsPlaying(true);
           })
           .catch((error) => {
-            console.log('CanPlay auto-play failed:', error);
           });
       };
 
@@ -256,14 +240,11 @@ export default function SeranoteDetailPage() {
 
       // Simple auto-play after a short delay
       const autoPlayTimer = setTimeout(() => {
-        console.log('Attempting delayed auto-play');
         audioElement.play()
           .then(() => {
-            console.log('Delayed auto-play successful');
             setIsPlaying(true);
           })
           .catch((error) => {
-            console.log('Delayed auto-play failed:', error);
           });
       }, 1000);
 
@@ -293,25 +274,18 @@ export default function SeranoteDetailPage() {
 
   const togglePlay = async () => {
     if (!audioRef.current || !seranote) {
-      console.log('Cannot play: audioRef.current =', audioRef.current, 'seranote =', seranote);
       return;
     }
 
-    console.log('Toggle play called, isPlaying:', isPlaying, 'isClipFinished:', isClipFinished);
-    console.log('Audio element readyState:', audioRef.current.readyState);
-    console.log('Audio element src:', audioRef.current.src);
 
     try {
       if (isPlaying) {
-        console.log('Pausing audio');
         audioRef.current.pause();
         setIsPlaying(false);
       } else {
-        console.log('Starting/resuming audio playback');
         
         // If clip is finished, restart from beginning
         if (isClipFinished) {
-          console.log('Clip was finished, restarting from beginning');
           audioRef.current.currentTime = seranote.songClipStart;
           setIsClipFinished(false);
         }
@@ -319,11 +293,10 @@ export default function SeranoteDetailPage() {
         
         // Try to play the audio
         await audioRef.current.play();
-        console.log('Audio play started successfully');
         setIsPlaying(true);
       }
     } catch (error) {
-      console.error('Error playing audio:', error);
+      console.log('error playing audio', error);
       setIsPlaying(false);
       // You could add a toast notification here to inform the user
     }
@@ -342,58 +315,7 @@ export default function SeranoteDetailPage() {
     return Math.min(Math.max((elapsed / totalClipDuration) * 100, 0), 100);
   };
 
-  const sendMessage = async (content: string) => {
-    if (!seranote || !user) return;
-
-    // Create optimistic message for immediate UI update
-    const optimisticMessage = {
-      id: `temp-${Date.now()}`,
-      content,
-      createdAt: new Date().toISOString(),
-      sender: {
-        id: user.id,
-        name: user.fullName || user.firstName || 'You',
-        email: user.primaryEmailAddress?.emailAddress || '',
-      },
-    };
-
-    // Add optimistic message immediately
-    setMessages((prev) => [...prev, optimisticMessage]);
-
-    try {
-      setIsSendingMessage(true);
-
-      const response = await fetch(`/api/seranotes/${seranote.id}/messages`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ content }),
-      });
-
-      if (!response.ok) throw new Error('Failed to send message');
-
-      const newMessage = await response.json();
-      
-      // Replace optimistic message with real message
-      setMessages((prev) => 
-        prev.map(msg => 
-          msg.id === optimisticMessage.id ? newMessage : msg
-        )
-      );
-    } catch (err) {
-      console.error('Error sending message:', err);
-      
-      // Remove optimistic message on error
-      setMessages((prev) => 
-        prev.filter(msg => msg.id !== optimisticMessage.id)
-      );
-      
-      // You could add a toast notification here
-    } finally {
-      setIsSendingMessage(false);
-    }
-  };
+  // sendMessage is now provided by the useMessages hook
 
   if (isLoading) {
     return <LoadingComponent />;

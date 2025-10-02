@@ -30,7 +30,6 @@ export async function POST(req: NextRequest) {
 
     if (eventType === 'user.deleted') {
       if (id) {
-        console.log(id);
         await prisma.user.delete({
           where: { id },
         });

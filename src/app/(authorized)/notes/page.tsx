@@ -21,6 +21,7 @@ interface Seranote {
   isDelivered: boolean;
   deliveredAt?: string;
   accessToken: string;
+  unreadCount: number; // Added unread count to the interface
   sender?: {
     id: string;
     name: string | null;
@@ -104,6 +105,7 @@ export default function NotesPage() {
                   views: 0,
                 }}
                 index={index}
+                unreadCount={note.unreadCount}
               />
             </div>
           ))}

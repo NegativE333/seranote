@@ -5,20 +5,20 @@ import { motion } from 'motion/react';
 import { Send, Loader2 } from 'lucide-react';
 
 interface MessageInputProps {
-  onSendMessage: (content: string) => Promise<void>;
+  onSendMessage: (content: string) => void;
   isSending: boolean;
 }
 
 export default function MessageInput({ onSendMessage, isSending }: MessageInputProps) {
   const [message, setMessage] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim() || isSending) return;
 
     const messageToSend = message.trim();
     setMessage('');
-    await onSendMessage(messageToSend);
+    onSendMessage(messageToSend);
   };
 
   return (

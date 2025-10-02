@@ -96,7 +96,42 @@ export async function GET(req: Request) {
       },
     });
 
-    return NextResponse.json(seranotes);
+    // Calculate unread counts for each seranote
+    const seranotesWithUnreadCounts = await Promise.all(
+      seranotes.map(async (seranote) => {
+        // Get the last read timestamp for this user and seranote
+        const readStatus = await prisma.userSeranoteRead.findUnique({
+          where: {
+            userEmail_seranoteId: {
+              userEmail: primaryEmail,
+              seranoteId: seranote.id,
+            },
+          },
+        });
+
+        const lastReadAt = readStatus?.lastReadAt || new Date(0);
+
+        // Count unread messages
+        const unreadCount = await prisma.message.count({
+          where: {
+            seranoteId: seranote.id,
+            createdAt: {
+              gt: lastReadAt,
+            },
+            senderEmail: {
+              not: primaryEmail, // Don't count own messages
+            },
+          },
+        });
+
+        return {
+          ...seranote,
+          unreadCount,
+        };
+      })
+    );
+
+    return NextResponse.json(seranotesWithUnreadCounts);
   } catch (error) {
     console.error('Error fetching seranotes:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
