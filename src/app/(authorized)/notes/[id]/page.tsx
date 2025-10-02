@@ -115,6 +115,32 @@ export default function SeranoteDetailPage() {
     }
   }, [params.id]);
 
+  // Periodic message refresh
+  useEffect(() => {
+    if (!seranote?.id) return;
+
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch(`/api/seranotes/${seranote.id}/messages`);
+        if (response.ok) {
+          const data = await response.json();
+          setMessages(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch messages:', error);
+      }
+    };
+
+    // Fetch messages immediately
+    fetchMessages();
+
+    // Set up interval to fetch messages every 3 seconds
+    const interval = setInterval(fetchMessages, 3000);
+
+    // Cleanup interval on unmount or when seranote changes
+    return () => clearInterval(interval);
+  }, [seranote?.id]);
+
   const fetchSongData = async (songId: string) => {
     try {
       const response = await fetch('/api/sanity');
@@ -319,6 +345,21 @@ export default function SeranoteDetailPage() {
   const sendMessage = async (content: string) => {
     if (!seranote || !user) return;
 
+    // Create optimistic message for immediate UI update
+    const optimisticMessage = {
+      id: `temp-${Date.now()}`,
+      content,
+      createdAt: new Date().toISOString(),
+      sender: {
+        id: user.id,
+        name: user.fullName || user.firstName || 'You',
+        email: user.primaryEmailAddress?.emailAddress || '',
+      },
+    };
+
+    // Add optimistic message immediately
+    setMessages((prev) => [...prev, optimisticMessage]);
+
     try {
       setIsSendingMessage(true);
 
@@ -333,9 +374,21 @@ export default function SeranoteDetailPage() {
       if (!response.ok) throw new Error('Failed to send message');
 
       const newMessage = await response.json();
-      setMessages((prev) => [...prev, newMessage]);
+      
+      // Replace optimistic message with real message
+      setMessages((prev) => 
+        prev.map(msg => 
+          msg.id === optimisticMessage.id ? newMessage : msg
+        )
+      );
     } catch (err) {
       console.error('Error sending message:', err);
+      
+      // Remove optimistic message on error
+      setMessages((prev) => 
+        prev.filter(msg => msg.id !== optimisticMessage.id)
+      );
+      
       // You could add a toast notification here
     } finally {
       setIsSendingMessage(false);
