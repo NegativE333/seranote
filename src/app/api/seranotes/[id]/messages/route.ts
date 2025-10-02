@@ -32,10 +32,7 @@ async function getUnreadCount(seranoteId: string, userEmail: string) {
   return unreadCount;
 }
 
-export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -50,12 +47,9 @@ export async function GET(
 
     // Check if user has access to this seranote
     const seranote = await prisma.seranote.findFirst({
-      where: { 
+      where: {
         id: id,
-        OR: [
-          { senderEmail: primaryEmail },
-          { receiverEmail: primaryEmail }
-        ]
+        OR: [{ senderEmail: primaryEmail }, { receiverEmail: primaryEmail }],
       },
     });
 
@@ -84,10 +78,7 @@ export async function GET(
   }
 }
 
-export async function POST(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -107,12 +98,9 @@ export async function POST(
 
     // Check if user has access to this seranote
     const seranote = await prisma.seranote.findFirst({
-      where: { 
+      where: {
         id: id,
-        OR: [
-          { senderEmail: primaryEmail },
-          { receiverEmail: primaryEmail }
-        ]
+        OR: [{ senderEmail: primaryEmail }, { receiverEmail: primaryEmail }],
       },
     });
 
@@ -150,10 +138,7 @@ export async function POST(
   }
 }
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -168,12 +153,9 @@ export async function PATCH(
 
     // Check if user has access to this seranote
     const seranote = await prisma.seranote.findFirst({
-      where: { 
+      where: {
         id: id,
-        OR: [
-          { senderEmail: primaryEmail },
-          { receiverEmail: primaryEmail }
-        ]
+        OR: [{ senderEmail: primaryEmail }, { receiverEmail: primaryEmail }],
       },
     });
 

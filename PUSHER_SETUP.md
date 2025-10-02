@@ -54,10 +54,3 @@ npm install
 3. Clients receive the message instantly and update their UI
 4. Unread counts are calculated and displayed
 5. When a user views messages, they're automatically marked as read
-
-## 7. Performance Benefits
-
-- **No more polling**: Eliminates the 3-second interval requests
-- **Reduced server load**: Only sends data when there are actual updates
-- **Better user experience**: Instant message delivery
-- **Lower bandwidth usage**: Only sends new messages, not full message lists

@@ -16,26 +16,25 @@ export async function POST(req: Request) {
         where: { id: userId },
         update: {
           email: primaryEmail,
-          name: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.firstName || user.lastName,
+          name:
+            user.firstName && user.lastName
+              ? `${user.firstName} ${user.lastName}`
+              : user.firstName || user.lastName,
         },
         create: {
           id: userId,
           email: primaryEmail,
-          name: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.firstName || user.lastName,
+          name:
+            user.firstName && user.lastName
+              ? `${user.firstName} ${user.lastName}`
+              : user.firstName || user.lastName,
         },
       });
     }
 
     const body = await req.json();
-    const {
-      title,
-      message,
-      songId,
-      songClipStart,
-      songClipDur,
-      songTotalDur,
-      receiverEmail,
-    } = body || {};
+    const { title, message, songId, songClipStart, songClipDur, songTotalDur, receiverEmail } =
+      body || {};
 
     if (!title || !message || !songId) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -128,7 +127,7 @@ export async function GET(req: Request) {
           ...seranote,
           unreadCount,
         };
-      })
+      }),
     );
 
     return NextResponse.json(seranotesWithUnreadCounts);

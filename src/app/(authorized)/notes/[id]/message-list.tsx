@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { useUser } from '@clerk/nextjs';
+import moment from 'moment';
 
 interface Message {
   id: string;
@@ -53,7 +54,7 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
       {messages.map((message, index) => {
         const isOwnMessage = user?.id === message.sender.id;
         const isFirstMessage = index === 0 || messages[index - 1].sender.id !== message.sender.id;
-        
+
         return (
           <motion.div
             key={message.id}
@@ -78,13 +79,8 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
                 }`}
               >
                 <p className="text-sm leading-relaxed">{message.content}</p>
-                <div className={`text-xs mt-1 ${
-                  isOwnMessage ? 'text-white/70' : 'text-gray-400'
-                }`}>
-                  {new Date(message.createdAt).toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+                <div className={`text-xs mt-1 ${isOwnMessage ? 'text-white/70' : 'text-gray-400'}`}>
+                  {moment(message.createdAt).format('h:mm A')}
                 </div>
               </div>
             </div>

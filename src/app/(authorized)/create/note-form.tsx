@@ -57,7 +57,7 @@ export const NoteForm = () => {
           songClipStart: clipStart ?? 0,
           songClipDur: clipDuration ?? DEFAULT_CLIP_DURATION,
           songTotalDur: selectedSong.audioDur ?? null,
-          receiverEmail: email || null
+          receiverEmail: email || null,
         }),
       });
       if (!res.ok) {

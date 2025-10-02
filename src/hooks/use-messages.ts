@@ -58,6 +58,7 @@ export function useMessages({ seranoteId, userEmail }: UseMessagesProps) {
 
       return response.json();
     },
+    // Remove optimistic update - let Pusher handle all message updates
   });
 
   // Mark messages as read mutation
@@ -80,7 +81,7 @@ export function useMessages({ seranoteId, userEmail }: UseMessagesProps) {
           ...message,
           isRead: message.sender.email !== userEmail ? true : message.isRead,
           readAt: message.sender.email !== userEmail ? new Date().toISOString() : message.readAt,
-        }))
+        })),
       );
     },
   });
@@ -89,41 +90,54 @@ export function useMessages({ seranoteId, userEmail }: UseMessagesProps) {
   useEffect(() => {
     if (!pusher || !seranoteId) return;
 
-    const channel = pusher.subscribe(`seranote-${seranoteId}`);
+    let channel: any = null;
 
-    // Listen for new messages
-    channel.bind('new-message', (data: { message: Message; unreadCount: number }) => {
-      queryClient.setQueryData(['messages', seranoteId], (old: Message[] = []) => {
-        // Check if message already exists (avoid duplicates)
-        const exists = old.some(msg => msg.id === data.message.id);
-        if (exists) return old;
-        
-        return [...old, data.message];
+    try {
+      channel = pusher.subscribe(`seranote-${seranoteId}`);
+
+      // Listen for new messages
+      channel.bind('new-message', (data: { message: Message; unreadCount: number }) => {
+        queryClient.setQueryData(['messages', seranoteId], (old: Message[] = []) => {
+          // Check if message already exists (avoid duplicates)
+          const exists = old.some((msg) => msg.id === data.message.id);
+          if (exists) return old;
+
+          return [...old, data.message];
+        });
       });
-    });
 
-    // Listen for messages read events
-    channel.bind('messages-read', (data: { userEmail: string; unreadCount: number }) => {
-      if (data.userEmail !== userEmail) {
-        // Someone else marked messages as read
-        queryClient.setQueryData(['messages', seranoteId], (old: Message[] = []) =>
-          old.map((message) => ({
-            ...message,
-            isRead: message.sender.email !== data.userEmail ? true : message.isRead,
-            readAt: message.sender.email !== data.userEmail ? new Date().toISOString() : message.readAt,
-          }))
-        );
-      }
-    });
+      // Listen for messages read events
+      channel.bind('messages-read', (data: { userEmail: string; unreadCount: number }) => {
+        if (data.userEmail !== userEmail) {
+          // Someone else marked messages as read
+          queryClient.setQueryData(['messages', seranoteId], (old: Message[] = []) =>
+            old.map((message) => ({
+              ...message,
+              isRead: message.sender.email !== data.userEmail ? true : message.isRead,
+              readAt:
+                message.sender.email !== data.userEmail ? new Date().toISOString() : message.readAt,
+            })),
+          );
+        }
+      });
+    } catch (error) {
+      console.error('Error setting up Pusher channel:', error);
+    }
 
     return () => {
-      pusher.unsubscribe(`seranote-${seranoteId}`);
+      if (channel) {
+        try {
+          pusher.unsubscribe(`seranote-${seranoteId}`);
+        } catch (error) {
+          console.error('Error unsubscribing from Pusher channel:', error);
+        }
+      }
     };
   }, [pusher, seranoteId, userEmail, queryClient]);
 
   // Calculate unread count
   const unreadCount = messages.filter(
-    (message) => !message.isRead && message.sender.email !== userEmail
+    (message) => !message.isRead && message.sender.email !== userEmail,
   ).length;
 
   return {

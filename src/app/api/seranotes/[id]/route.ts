@@ -2,10 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth, currentUser } from '@clerk/nextjs/server';
 
-export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -20,12 +17,9 @@ export async function GET(
     const { id } = await params;
 
     const seranote = await prisma.seranote.findFirst({
-      where: { 
+      where: {
         id: id,
-        OR: [
-          { senderEmail: primaryEmail },
-          { receiverEmail: primaryEmail }
-        ]
+        OR: [{ senderEmail: primaryEmail }, { receiverEmail: primaryEmail }],
       },
       include: {
         messages: {

@@ -2,13 +2,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LinkIcon, TrashIcon, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
 
-export const NoteCard = ({ 
-  note, 
-  index, 
-  unreadCount = 0 
-}: { 
-  note: any; 
-  index: number; 
+export const NoteCard = ({
+  note,
+  index,
+  unreadCount = 0,
+}: {
+  note: any;
+  index: number;
   unreadCount?: number;
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);

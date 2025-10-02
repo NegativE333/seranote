@@ -41,11 +41,7 @@ export default function MessageInput({ onSendMessage, isSending }: MessageInputP
           whileTap={{ scale: 0.95 }}
           className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:from-purple-700 hover:to-pink-700 disabled:hover:from-purple-600 disabled:hover:to-pink-600"
         >
-          {isSending ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Send className="w-4 h-4" />
-          )}
+          {isSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
         </motion.button>
       </div>
     </form>

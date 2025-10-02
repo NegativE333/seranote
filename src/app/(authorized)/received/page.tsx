@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { NoteCard } from '../notes/note-card';
 import { motion } from 'motion/react';
 import { InboxIcon } from 'lucide-react';
+import moment from 'moment';
 
 interface Seranote {
   id: string;
@@ -49,7 +50,7 @@ export default function ReceivedNotesPage() {
         const data = await response.json();
         setNotes(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch received notes');
+        setError(err instanceof Error ? err.message : 'Failed to received notes');
       } finally {
         setIsLoading(false);
       }
@@ -89,7 +90,7 @@ export default function ReceivedNotesPage() {
     >
       <h1 className="text-3xl font-bold text-white mb-2">Received Notes</h1>
       <p className="text-gray-400 mb-8">Notes that others have shared with you.</p>
-      
+
       {hasNotes ? (
         <div className="space-y-4">
           {notes.map((note, index) => (
@@ -99,11 +100,7 @@ export default function ReceivedNotesPage() {
                   id: note.id,
                   title: note.title,
                   snippet: note.message,
-                  date: new Date(note.createdAt).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  }),
+                  date: moment(note.createdAt).format('MMM D, YYYY'),
                   views: 0,
                   sender: note.sender,
                 }}
@@ -120,7 +117,8 @@ export default function ReceivedNotesPage() {
           </div>
           <h2 className="text-2xl font-bold text-white/90 mb-2">No received notes yet</h2>
           <p className="text-gray-400 max-w-sm mx-auto">
-            Notes shared with you will appear here. Share your first note with someone to get started!
+            Notes shared with you will appear here. Share your first note with someone to get
+            started!
           </p>
         </div>
       )}

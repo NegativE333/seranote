@@ -5,6 +5,7 @@ import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { NoteCard } from './note-card';
 import { motion } from 'motion/react';
+import moment from 'moment';
 
 interface Seranote {
   id: string;
@@ -97,11 +98,7 @@ export default function NotesPage() {
                   id: note.id,
                   title: note.title,
                   snippet: note.message,
-                  date: new Date(note.createdAt).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  }),
+                  date: moment(note.createdAt).format('MMM D, YYYY'),
                   views: 0,
                 }}
                 index={index}

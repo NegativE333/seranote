@@ -11,6 +11,7 @@ import MessageList from './message-list';
 import MessageInput from './message-input';
 import { useUser } from '@clerk/nextjs';
 import { useMessages } from '@/hooks/use-messages';
+import moment from 'moment';
 
 interface Message {
   id: string;
@@ -202,9 +203,10 @@ export default function SeranoteDetailPage() {
 
       const handleLoadedMetadata = () => {
         audioElement.currentTime = seranote.songClipStart;
-        
+
         // Simple auto-play - try immediately
-        audioElement.play()
+        audioElement
+          .play()
           .then(() => {
             setIsPlaying(true);
           })
@@ -219,12 +221,12 @@ export default function SeranoteDetailPage() {
       };
 
       const handleCanPlay = () => {
-        audioElement.play()
+        audioElement
+          .play()
           .then(() => {
             setIsPlaying(true);
           })
-          .catch((error) => {
-          });
+          .catch((error) => {});
       };
 
       audioElement.addEventListener('timeupdate', handleTimeUpdate);
@@ -240,12 +242,12 @@ export default function SeranoteDetailPage() {
 
       // Simple auto-play after a short delay
       const autoPlayTimer = setTimeout(() => {
-        audioElement.play()
+        audioElement
+          .play()
           .then(() => {
             setIsPlaying(true);
           })
-          .catch((error) => {
-          });
+          .catch((error) => {});
       }, 1000);
 
       // Cleanup function
@@ -277,20 +279,18 @@ export default function SeranoteDetailPage() {
       return;
     }
 
-
     try {
       if (isPlaying) {
         audioRef.current.pause();
         setIsPlaying(false);
       } else {
-        
         // If clip is finished, restart from beginning
         if (isClipFinished) {
           audioRef.current.currentTime = seranote.songClipStart;
           setIsClipFinished(false);
         }
         // Otherwise, resume from current position (no change to currentTime)
-        
+
         // Try to play the audio
         await audioRef.current.play();
         setIsPlaying(true);
@@ -412,19 +412,20 @@ export default function SeranoteDetailPage() {
                   <p className="text-sm text-white/80 leading-none">{song.album}</p>
                   <div className="text-xs text-white/70">
                     <span className="font-medium">
-                      {isClipFinished ? '0:00' : formatTime(Math.max(0, seranote.songClipDur - (currentTime - seranote.songClipStart)))}
+                      {isClipFinished
+                        ? '0:00'
+                        : formatTime(
+                            Math.max(
+                              0,
+                              seranote.songClipDur - (currentTime - seranote.songClipStart),
+                            ),
+                          )}
                     </span>
                   </div>
                 </div>
               </div>
               <p className="text-xs text-white/80 leading-none mt-3">
-                {new Date(seranote.createdAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
+                {moment(seranote.createdAt).format('Do MMM YYYY, h:mm A')}
               </p>
             </div>
           )}
