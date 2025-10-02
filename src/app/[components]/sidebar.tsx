@@ -7,6 +7,7 @@ import {
   PlusIcon,
   LayoutDashboardIcon,
   MusicIcon,
+  InboxIcon,
   EyeIcon,
   SettingsIcon,
   UserCog,
@@ -79,6 +80,7 @@ export const Sidebar = () => {
           path="/overview"
         />
         <NavItem label="My Notes" icon={<MusicIcon className="w-5 h-5" />} path="/notes" />
+        <NavItem label="Received" icon={<InboxIcon className="w-5 h-5" />} path="/received" />
         <NavItem label="Analytics" icon={<EyeIcon className="w-5 h-5" />} path="/analytics" />
       </nav>
 

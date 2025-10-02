@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import React, { FC, useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { PlayIcon, PauseIcon, XIcon } from "lucide-react";
-import Image from "next/image";
-import { urlFor } from "@/lib/sanity";
+import React, { FC, useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { PlayIcon, PauseIcon, XIcon } from 'lucide-react';
+import Image from 'next/image';
+import { urlFor } from '@/lib/sanity';
 
 interface Song {
   id: string;
@@ -31,12 +31,12 @@ const MIN_DURATION = 14;
 const constructAudioUrl = (audioLink: any): string | null => {
   if (!audioLink?.asset?._ref) return null;
   const ref = audioLink.asset._ref as string;
-  const parts = ref.split("-");
+  const parts = ref.split('-');
   if (parts.length >= 3) {
     const id = parts[1];
     const format = parts[2];
-    const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "";
-    const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "";
+    const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '';
+    const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || '';
     if (!projectId || !dataset) return null;
     return `https://cdn.sanity.io/files/${projectId}/${dataset}/${id}.${format}`;
   }
@@ -49,14 +49,13 @@ export const DurationSelectModal: FC<DurationSelectModalProps> = ({
   song,
   onConfirmDuration,
 }) => {
-  console.log(song);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [trackDur, setTrackDur] = useState<number>(0);
 
   const [startSec, setStartSec] = useState(0);
   const [endSec, setEndSec] = useState(MIN_DURATION);
-  const [activeSlider, setActiveSlider] = useState<"start" | "end">("start");
+  const [activeSlider, setActiveSlider] = useState<'start' | 'end'>('start');
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
@@ -78,7 +77,7 @@ export const DurationSelectModal: FC<DurationSelectModalProps> = ({
       const hint = Math.min(song.audioDur ?? MAX_DURATION, MAX_DURATION);
       setEndSec(Math.max(MIN_DURATION, hint));
       endRef.current = Math.max(MIN_DURATION, hint);
-      setActiveSlider("start");
+      setActiveSlider('start');
     } else {
       setAudioUrl(null);
       setIsPlaying(false);
@@ -87,7 +86,7 @@ export const DurationSelectModal: FC<DurationSelectModalProps> = ({
       startRef.current = 0;
       setEndSec(MIN_DURATION);
       endRef.current = MIN_DURATION;
-      setActiveSlider("start");
+      setActiveSlider('start');
     }
   }, [song]);
 
@@ -228,7 +227,7 @@ export const DurationSelectModal: FC<DurationSelectModalProps> = ({
     [s, e] = clampPair(s, e);
     setStartSec(s);
     setEndSec(e);
-    setActiveSlider("start");
+    setActiveSlider('start');
   };
 
   const onEndChange = (val: number) => {
@@ -237,7 +236,7 @@ export const DurationSelectModal: FC<DurationSelectModalProps> = ({
     [s, e] = clampPair(s, e);
     setStartSec(s);
     setEndSec(e);
-    setActiveSlider("end");
+    setActiveSlider('end');
   };
 
   const pct = (sec: number) => (trackDur ? (sec / trackDur) * 100 : 0);
@@ -250,18 +249,18 @@ export const DurationSelectModal: FC<DurationSelectModalProps> = ({
     const clickPct = ((e.clientX - rect.left) / rect.width) * 100;
     const dStart = Math.abs(clickPct - startThumbPct);
     const dEnd = Math.abs(clickPct - endThumbPct);
-    setActiveSlider(dStart <= dEnd ? "start" : "end");
+    setActiveSlider(dStart <= dEnd ? 'start' : 'end');
   };
 
   const onTimelinePointerDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!timelineRef.current || !trackDur) return;
 
-    if ((e.target as HTMLElement).tagName.toLowerCase() === "input") {
+    if ((e.target as HTMLElement).tagName.toLowerCase() === 'input') {
       const rect = timelineRef.current.getBoundingClientRect();
       const clickPct = ((e.clientX - rect.left) / rect.width) * 100;
       const dStart = Math.abs(clickPct - startThumbPct);
       const dEnd = Math.abs(clickPct - endThumbPct);
-      setActiveSlider(dStart <= dEnd ? "start" : "end");
+      setActiveSlider(dStart <= dEnd ? 'start' : 'end');
       return;
     }
 
@@ -278,7 +277,11 @@ export const DurationSelectModal: FC<DurationSelectModalProps> = ({
 
   const confirm = () => {
     if (!song) return;
-    onConfirmDuration(song, startRef.current, Math.max(MIN_DURATION, Math.min(endRef.current - startRef.current, MAX_DURATION)));
+    onConfirmDuration(
+      song,
+      startRef.current,
+      Math.max(MIN_DURATION, Math.min(endRef.current - startRef.current, MAX_DURATION)),
+    );
   };
 
   if (!song) return null;
@@ -289,7 +292,7 @@ export const DurationSelectModal: FC<DurationSelectModalProps> = ({
   const format = (t: number) => {
     const m = Math.floor(t / 60);
     const s = Math.floor(t % 60);
-    return `${m}:${s.toString().padStart(2, "0")}`;
+    return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -307,11 +310,14 @@ export const DurationSelectModal: FC<DurationSelectModalProps> = ({
             initial={{ scale: 0.95, y: 16 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.95, y: 16 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
           >
             <div className="p-4 border-b border-white/10 flex justify-between items-center bg-gradient-to-r from-white/5 to-transparent">
               <h3 className="text-base font-semibold text-white">Select Audio</h3>
-              <button onClick={onClose} className="p-1 rounded-full hover:bg-white/10 transition-colors">
+              <button
+                onClick={onClose}
+                className="p-1 rounded-full hover:bg-white/10 transition-colors"
+              >
                 <XIcon className="w-5 h-5 text-gray-400" />
               </button>
             </div>
@@ -336,9 +342,13 @@ export const DurationSelectModal: FC<DurationSelectModalProps> = ({
                   onClick={handlePlayPause}
                   disabled={!audioUrl}
                   className="p-2 rounded-full bg-purple-600/60 hover:bg-purple-600 transition-colors disabled:opacity-50 shadow-md shadow-purple-900/30"
-                  aria-label={isPlaying ? "Pause" : "Play"}
+                  aria-label={isPlaying ? 'Pause' : 'Play'}
                 >
-                  {isPlaying ? <PauseIcon className="w-5 h-5 text-white" /> : <PlayIcon className="w-5 h-5 text-white" />}
+                  {isPlaying ? (
+                    <PauseIcon className="w-5 h-5 text-white" />
+                  ) : (
+                    <PlayIcon className="w-5 h-5 text-white" />
+                  )}
                 </button>
 
                 <div className="relative flex-1">
@@ -354,7 +364,7 @@ export const DurationSelectModal: FC<DurationSelectModalProps> = ({
                       className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 h-[6px] rounded-full"
                       style={{
                         backgroundImage:
-                          "repeating-linear-gradient(to right, rgba(255,255,255,0.08) 0 1px, transparent 1px 8px)",
+                          'repeating-linear-gradient(to right, rgba(255,255,255,0.08) 0 1px, transparent 1px 8px)',
                       }}
                     />
                     {/* Selection fill */}
@@ -364,15 +374,15 @@ export const DurationSelectModal: FC<DurationSelectModalProps> = ({
                         left: `${selLeftPct}%`,
                         width: `${selWidthPct}%`,
                         background:
-                          "linear-gradient(90deg, rgba(168,85,247,0.35) 0%, rgba(236,72,153,0.35) 100%)",
-                        transition: "left 120ms ease, width 120ms ease",
+                          'linear-gradient(90deg, rgba(168,85,247,0.35) 0%, rgba(236,72,153,0.35) 100%)',
+                        transition: 'left 120ms ease, width 120ms ease',
                       }}
                     />
                     {/* Playhead (transform-based, very smooth) */}
                     <div
                       ref={playheadRef}
                       className="pointer-events-none absolute top-[25%] will-change-transform"
-                      style={{ transform: "translate3d(0,0,0)" }}
+                      style={{ transform: 'translate3d(0,0,0)' }}
                     >
                       <div className="w-[2px] h-6 bg-white/85 shadow-[0_0_10px_rgba(255,255,255,0.45)]" />
                       <div className="mt-1 w-2 h-2 rounded-full bg-white/90 -translate-x-[3px] shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
@@ -389,10 +399,10 @@ export const DurationSelectModal: FC<DurationSelectModalProps> = ({
                         onChange={(e) => onStartChange(parseFloat(e.target.value))}
                         onMouseDown={(e) => {
                           e.stopPropagation();
-                          setActiveSlider("start");
+                          setActiveSlider('start');
                         }}
                         className={`range-thumb w-full h-12 bg-transparent appearance-none cursor-pointer ${
-                          activeSlider === "start" ? "z-20" : "z-10"
+                          activeSlider === 'start' ? 'z-20' : 'z-10'
                         }`}
                       />
                       <input
@@ -404,10 +414,10 @@ export const DurationSelectModal: FC<DurationSelectModalProps> = ({
                         onChange={(e) => onEndChange(parseFloat(e.target.value))}
                         onMouseDown={(e) => {
                           e.stopPropagation();
-                          setActiveSlider("end");
+                          setActiveSlider('end');
                         }}
                         className={`range-thumb w-full h-12 bg-transparent appearance-none cursor-pointer absolute inset-0 ${
-                          activeSlider === "end" ? "z-20" : "z-10"
+                          activeSlider === 'end' ? 'z-20' : 'z-10'
                         }`}
                       />
                     </div>
@@ -453,7 +463,9 @@ export const DurationSelectModal: FC<DurationSelectModalProps> = ({
               </div>
 
               <p className="text-center text-sm text-gray-200 mt-3">
-                Selected: {format(startSec)} - {format(Math.min(trackDur || Infinity, endRef.current))} ({Math.round(endRef.current - startRef.current)}s)
+                Selected: {format(startSec)} -{' '}
+                {format(Math.min(trackDur || Infinity, endRef.current))} (
+                {Math.round(endRef.current - startRef.current)}s)
               </p>
             </div>
 

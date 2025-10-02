@@ -1,8 +1,16 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { LinkIcon, TrashIcon } from 'lucide-react';
+import { LinkIcon, TrashIcon, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
 
-export const NoteCard = ({ note, index }: { note: any; index: number }) => {
+export const NoteCard = ({
+  note,
+  index,
+  unreadCount = 0,
+}: {
+  note: any;
+  index: number;
+  unreadCount?: number;
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
 
@@ -68,7 +76,24 @@ export const NoteCard = ({ note, index }: { note: any; index: number }) => {
 
       <div className="p-6 pl-8">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-white/90">{note.title}</h3>
+          <div className="flex-1">
+            <div className="flex items-center gap-3">
+              <h3 className="text-lg font-semibold text-white/90">{note.title}</h3>
+              {unreadCount > 0 && (
+                <div className="flex items-center gap-1">
+                  <MessageCircle className="w-4 h-4 text-red-400" />
+                  <span className="px-2 py-1 bg-red-500/20 text-red-300 text-xs rounded-full animate-pulse">
+                    {unreadCount}
+                  </span>
+                </div>
+              )}
+            </div>
+            {note.sender && (
+              <p className="text-sm text-purple-400 mt-1">
+                from {note.sender.name || note.sender.email}
+              </p>
+            )}
+          </div>
           <div className="flex items-center gap-2 text-gray-400">
             <span className="text-xs">{note.date}</span>
           </div>

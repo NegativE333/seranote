@@ -16,26 +16,25 @@ export async function POST(req: Request) {
         where: { id: userId },
         update: {
           email: primaryEmail,
-          name: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.firstName || user.lastName,
+          name:
+            user.firstName && user.lastName
+              ? `${user.firstName} ${user.lastName}`
+              : user.firstName || user.lastName,
         },
         create: {
           id: userId,
           email: primaryEmail,
-          name: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.firstName || user.lastName,
+          name:
+            user.firstName && user.lastName
+              ? `${user.firstName} ${user.lastName}`
+              : user.firstName || user.lastName,
         },
       });
     }
 
     const body = await req.json();
-    const {
-      title,
-      message,
-      songId,
-      songClipStart,
-      songClipDur,
-      songTotalDur,
-      receiverId,
-    } = body || {};
+    const { title, message, songId, songClipStart, songClipDur, songTotalDur, receiverEmail } =
+      body || {};
 
     if (!title || !message || !songId) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -49,8 +48,8 @@ export async function POST(req: Request) {
         songClipStart: songClipStart || 0,
         songClipDur: songClipDur || 114,
         songTotalDur: songTotalDur || null,
-        senderId: userId,
-        receiverId: receiverId || null,
+        senderEmail: primaryEmail,
+        receiverEmail: receiverEmail || null,
       },
     });
 
@@ -66,15 +65,72 @@ export async function GET(req: Request) {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+    const user = await currentUser();
+    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+
+    const primaryEmail = user.emailAddresses[0]?.emailAddress;
+    if (!primaryEmail) return NextResponse.json({ error: 'User email not found' }, { status: 400 });
+
+    const url = new URL(req.url);
+    const type = url.searchParams.get('type') || 'sent';
+
+    let whereClause;
+    if (type === 'received') {
+      whereClause = { receiverEmail: primaryEmail };
+    } else {
+      whereClause = { senderEmail: primaryEmail };
+    }
+
     const seranotes = await prisma.seranote.findMany({
-      where: { senderId: userId },
+      where: whereClause,
       orderBy: { createdAt: 'desc' },
       include: {
-        sender: true,
+        sender: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 
-    return NextResponse.json(seranotes);
+    // Calculate unread counts for each seranote
+    const seranotesWithUnreadCounts = await Promise.all(
+      seranotes.map(async (seranote) => {
+        // Get the last read timestamp for this user and seranote
+        const readStatus = await prisma.userSeranoteRead.findUnique({
+          where: {
+            userEmail_seranoteId: {
+              userEmail: primaryEmail,
+              seranoteId: seranote.id,
+            },
+          },
+        });
+
+        const lastReadAt = readStatus?.lastReadAt || new Date(0);
+
+        // Count unread messages
+        const unreadCount = await prisma.message.count({
+          where: {
+            seranoteId: seranote.id,
+            createdAt: {
+              gt: lastReadAt,
+            },
+            senderEmail: {
+              not: primaryEmail, // Don't count own messages
+            },
+          },
+        });
+
+        return {
+          ...seranote,
+          unreadCount,
+        };
+      }),
+    );
+
+    return NextResponse.json(seranotesWithUnreadCounts);
   } catch (error) {
     console.error('Error fetching seranotes:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
