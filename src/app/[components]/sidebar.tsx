@@ -5,13 +5,11 @@ import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   PlusIcon,
-  LayoutDashboardIcon,
-  MusicIcon,
   InboxIcon,
-  EyeIcon,
   SettingsIcon,
   UserCog,
   LogOut,
+  SendIcon,
 } from 'lucide-react';
 // Import the useUser and useClerk hooks
 import { useUser, useClerk } from '@clerk/nextjs';
@@ -84,14 +82,8 @@ export const Sidebar = () => {
       </motion.button>
 
       <nav className="flex flex-col gap-2">
-        <NavItem
-          label="Overview"
-          icon={<LayoutDashboardIcon className="w-5 h-5" />}
-          path="/overview"
-        />
-        <NavItem label="My Notes" icon={<MusicIcon className="w-5 h-5" />} path="/notes" />
-        <NavItem label="Received" icon={<InboxIcon className="w-5 h-5" />} path="/received" />
-        <NavItem label="Analytics" icon={<EyeIcon className="w-5 h-5" />} path="/analytics" />
+        <NavItem label="Sent Notes" icon={<SendIcon className="w-5 h-5" />} path="/notes" />
+        <NavItem label="Received Notes" icon={<InboxIcon className="w-5 h-5" />} path="/received" />
       </nav>
 
       <div className="mt-auto">

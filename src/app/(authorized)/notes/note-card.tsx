@@ -13,6 +13,7 @@ export const NoteCard = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
+  console.log(note);
 
   const cardVariants = {
     initial: { opacity: 0, y: 20 },
@@ -60,7 +61,7 @@ export const NoteCard = ({
       variants={cardVariants}
       layout
       transition={{ layout: { duration: 0.3, ease: 'easeOut' } }}
-      className="relative bg-[#111113] border border-white/10 rounded-xl overflow-hidden cursor-pointer max-w-[1000px]"
+      className="relative bg-[#111113] border border-white/10 rounded-lg overflow-hidden cursor-pointer max-w-[1000px]"
       onHoverStart={handleMouseEnter}
       onHoverEnd={handleMouseLeave}
       onClick={handleClick}
@@ -74,28 +75,32 @@ export const NoteCard = ({
         transition={{ duration: 0.3 }}
       />
 
-      <div className="p-6 pl-8">
-        <div className="flex justify-between items-center">
+      <div className="p-4 pl-6">
+        <div className="flex justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-3">
               <h3 className="text-lg font-semibold text-white/90">{note.title}</h3>
-              {unreadCount > 0 && (
-                <div className="flex items-center gap-1">
-                  <MessageCircle className="w-4 h-4 text-red-400" />
-                  <span className="px-2 py-1 bg-red-500/20 text-red-300 text-xs rounded-full animate-pulse">
-                    {unreadCount}
-                  </span>
-                </div>
-              )}
             </div>
-            {note.sender && (
-              <p className="text-sm text-purple-400 mt-1">
-                from {note.sender.name || note.sender.email}
+            {note.senderEmail ? (
+              <p className="text-xs text-white/50 mt-1">
+                from {note.senderEmail}
               </p>
-            )}
+            ) : note.receiverEmail ? (
+              <p className="text-xs text-white/50 mt-1">
+                to {note.receiverEmail}
+              </p>
+            ) : null}
           </div>
-          <div className="flex items-center gap-2 text-gray-400">
-            <span className="text-xs">{note.date}</span>
+          <div className="flex flex-col justify-between items-end text-gray-400">
+            {unreadCount > 0 && (
+              <div className="flex items-center gap-1">
+                <MessageCircle className="w-4 h-4 text-purple-400" />
+                <span className="px-2 py-1 bg-purple-500/20 text-purple-300 text-xs rounded-full animate-pulse transition-all duration-200">
+                  {unreadCount}
+                </span>
+              </div>
+            )}
+            <span className="text-xs mt-auto">{note.date}</span>
           </div>
         </div>
 

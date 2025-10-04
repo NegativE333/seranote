@@ -7,6 +7,8 @@ import { NoteCard } from './note-card';
 import { motion } from 'motion/react';
 import moment from 'moment';
 import { LogoLoading } from '@/components/ui/logo-loading';
+import { MusicIcon, SendIcon, EyeIcon, MessageSquareIcon, UsersIcon } from 'lucide-react';
+import { AnalyticsCard } from '@/app/[components]/analytics-card';
 
 interface Seranote {
   id: string;
@@ -35,28 +37,45 @@ export default function NotesPage() {
   const { user } = useUser();
   const router = useRouter();
   const [notes, setNotes] = useState<Seranote[]>([]);
+  const [analytics, setAnalytics] = useState({
+    totalSeranotes: 0,
+    totalMessages: 0,
+    uniqueRecipients: 0,
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchNotes = async () => {
+    const fetchData = async () => {
       if (!user) return;
 
       try {
         setIsLoading(true);
-        const response = await fetch('/api/seranotes?type=sent');
-        if (!response.ok) throw new Error('Failed to fetch notes');
+        
+        // Fetch notes and analytics in parallel
+        const [notesResponse, analyticsResponse] = await Promise.all([
+          fetch('/api/seranotes?type=sent'),
+          fetch('/api/analytics?type=sent'),
+        ]);
 
-        const data = await response.json();
-        setNotes(data);
+        if (!notesResponse.ok) throw new Error('Failed to fetch notes');
+        if (!analyticsResponse.ok) throw new Error('Failed to fetch analytics');
+
+        const [notesData, analyticsData] = await Promise.all([
+          notesResponse.json(),
+          analyticsResponse.json(),
+        ]);
+
+        setNotes(notesData);
+        setAnalytics(analyticsData);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch notes');
+        setError(err instanceof Error ? err.message : 'Failed to fetch data');
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchNotes();
+    fetchData();
   }, [user]);
 
   const handleNoteClick = (noteId: string) => {
@@ -88,8 +107,32 @@ export default function NotesPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <h1 className="text-3xl font-bold text-white mb-2">My Notes</h1>
+      <h1 className="text-3xl font-bold text-white mb-2">Sent Notes</h1>
       <p className="text-gray-400 mb-8">Your personal collection of unspoken words and melodies.</p>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8 max-w-[1000px]">
+        <AnalyticsCard
+          title="Total Seranotes"
+          label="sent"
+          value={analytics.totalSeranotes.toString()}
+          icon={<SendIcon className="w-6 h-6" />}
+          gradient="bg-gradient-to-br from-purple-500 to-pink-500"
+        />
+        <AnalyticsCard
+          title="Total Messages"
+          label="received"
+          value={analytics.totalMessages.toString()}
+          icon={<MessageSquareIcon className="w-6 h-6" />}
+          gradient="bg-gradient-to-br from-blue-500 to-cyan-500"
+        />
+        <AnalyticsCard
+          title="Unique Recipients"
+          label="people"
+          value={analytics.uniqueRecipients.toString()}
+          icon={<UsersIcon className="w-6 h-6" />}
+          gradient="bg-gradient-to-br from-emerald-500 to-teal-500"
+        />  
+      </div>
       {hasNotes ? (
         <div className="space-y-4">
           {notes.map((note, index) => (
@@ -100,6 +143,7 @@ export default function NotesPage() {
                   title: note.title,
                   snippet: note.message,
                   date: moment(note.createdAt).format('MMM D, YYYY'),
+                  receiverEmail: note.receiverEmail,
                   views: 0,
                 }}
                 index={index}

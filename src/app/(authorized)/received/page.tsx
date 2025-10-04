@@ -5,9 +5,10 @@ import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { NoteCard } from '../notes/note-card';
 import { motion } from 'motion/react';
-import { InboxIcon } from 'lucide-react';
+import { InboxIcon, MessageSquareIcon, UsersIcon, EyeIcon, MessageCircleIcon } from 'lucide-react';
 import moment from 'moment';
 import { LogoLoading } from '@/components/ui/logo-loading';
+import { AnalyticsCard } from '@/app/[components]/analytics-card';
 
 interface Seranote {
   id: string;
@@ -36,28 +37,45 @@ export default function ReceivedNotesPage() {
   const { user } = useUser();
   const router = useRouter();
   const [notes, setNotes] = useState<Seranote[]>([]);
+  const [analytics, setAnalytics] = useState({
+    totalNotes: 0,
+    totalMessages: 0,
+    uniqueSenders: 0,
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchReceivedNotes = async () => {
+    const fetchData = async () => {
       if (!user) return;
 
       try {
         setIsLoading(true);
-        const response = await fetch('/api/seranotes?type=received');
-        if (!response.ok) throw new Error('Failed to fetch received notes');
+        
+        // Fetch notes and analytics in parallel
+        const [notesResponse, analyticsResponse] = await Promise.all([
+          fetch('/api/seranotes?type=received'),
+          fetch('/api/analytics?type=received'),
+        ]);
 
-        const data = await response.json();
-        setNotes(data);
+        if (!notesResponse.ok) throw new Error('Failed to fetch received notes');
+        if (!analyticsResponse.ok) throw new Error('Failed to fetch analytics');
+
+        const [notesData, analyticsData] = await Promise.all([
+          notesResponse.json(),
+          analyticsResponse.json(),
+        ]);
+
+        setNotes(notesData);
+        setAnalytics(analyticsData);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to received notes');
+        setError(err instanceof Error ? err.message : 'Failed to fetch data');
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchReceivedNotes();
+    fetchData();
   }, [user]);
 
   const handleNoteClick = (noteId: string) => {
@@ -92,6 +110,30 @@ export default function ReceivedNotesPage() {
       <h1 className="text-3xl font-bold text-white mb-2">Received Notes</h1>
       <p className="text-gray-400 mb-8">Notes that others have shared with you.</p>
 
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8 max-w-[1000px]">
+        <AnalyticsCard
+          title="Total Seranotes"
+          label="received"
+          value={analytics.totalNotes.toString()}
+          icon={<InboxIcon className="w-6 h-6" />}
+          gradient="bg-gradient-to-br from-purple-500 to-pink-500"
+        />
+        <AnalyticsCard
+          title="Total Messages"
+          label="received"
+          value={analytics.totalMessages.toString()}
+          icon={<MessageSquareIcon className="w-6 h-6" />}
+          gradient="bg-gradient-to-br from-blue-500 to-cyan-500"
+        />
+        <AnalyticsCard
+          title="Unique Senders"
+          label="people"
+          value={analytics.uniqueSenders.toString()}
+          icon={<UsersIcon className="w-6 h-6" />}
+          gradient="bg-gradient-to-br from-emerald-500 to-teal-500"
+        />
+      </div>
+
       {hasNotes ? (
         <div className="space-y-4">
           {notes.map((note, index) => (
@@ -103,7 +145,7 @@ export default function ReceivedNotesPage() {
                   snippet: note.message,
                   date: moment(note.createdAt).format('MMM D, YYYY'),
                   views: 0,
-                  sender: note.sender,
+                  senderEmail: note.senderEmail,
                 }}
                 index={index}
                 unreadCount={note.unreadCount}
