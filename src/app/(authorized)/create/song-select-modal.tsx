@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { urlFor } from '@/lib/sanity';
 import { useQuery } from '@tanstack/react-query';
 import { DurationSelectModal } from './duration-select-modal';
+import { LogoLoading } from '@/components/ui/logo-loading';
 
 interface Song {
   id: string;
@@ -165,7 +166,7 @@ export const SongSelectModal: FC<SongSelectModalProps> = ({ isOpen, onClose, onS
               <div className="flex-grow overflow-y-auto p-2 song-list-scrollbar">
                 {isLoading ? (
                   <div className="flex items-center justify-center p-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                    <LogoLoading size="md" />
                   </div>
                 ) : error ? (
                   <div className="flex items-center justify-center p-8 text-red-500">

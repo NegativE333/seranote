@@ -7,6 +7,7 @@ import { NoteCard } from '../notes/note-card';
 import { motion } from 'motion/react';
 import { InboxIcon } from 'lucide-react';
 import moment from 'moment';
+import { LogoLoading } from '@/components/ui/logo-loading';
 
 interface Seranote {
   id: string;
@@ -68,7 +69,7 @@ export default function ReceivedNotesPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        <LogoLoading size="lg" />
       </div>
     );
   }

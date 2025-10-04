@@ -62,19 +62,15 @@ export const Sidebar = () => {
 
   return (
     <aside className="fixed top-0 left-0 h-full w-64 bg-black/30 backdrop-blur-lg border-r border-white/10 p-4 flex flex-col">
-      <div className="flex items-end mb-10">
+      <div className="flex items-end mb-8">
         <Image
-          src="/images/seranote-logo.png"
+          src="/images/seranote-logo-white.png"
           alt="SERANOTE"
           width={100}
           height={100}
-          className="w-8 h-8"
+          className="w-7 h-7"
         />
-        <h2 className="text-2xl font-medium text-white/90 leading-none">
-          <span className="bg-gradient-to-b from-[#E040BB] to-[#7127BA] text-transparent bg-clip-text">
-            eranote
-          </span>
-        </h2>
+        <h2 className="text-2xl font-medium text-white/90 leading-none">eranote</h2>
       </div>
 
       <motion.button

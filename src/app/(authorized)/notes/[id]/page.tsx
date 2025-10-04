@@ -315,8 +315,6 @@ export default function SeranoteDetailPage() {
     return Math.min(Math.max((elapsed / totalClipDuration) * 100, 0), 100);
   };
 
-  // sendMessage is now provided by the useMessages hook
-
   if (isLoading) {
     return <LoadingComponent />;
   }

@@ -8,6 +8,7 @@ import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { Sidebar } from './[components]/sidebar';
 import Image from 'next/image';
+import { LogoLoading } from '@/components/ui/logo-loading';
 
 export default function HomePage() {
   const { isSignedIn, isLoaded } = useUser();
@@ -27,7 +28,7 @@ export default function HomePage() {
         <div className="min-h-screen flex items-center justify-center relative z-10">
           <Sidebar />
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
+            <LogoLoading size="md" />
           </div>
         </div>
       </div>
@@ -67,17 +68,13 @@ export default function HomePage() {
         <div className="container mx-auto px-6 py-5 flex justify-between items-center">
           <div className="flex items-end">
             <Image
-              src="/images/seranote-logo.png"
+              src="/images/seranote-logo-white.png"
               alt="SERANOTE"
               width={100}
               height={100}
-              className="w-8 h-8"
+              className="w-7 h-7"
             />
-            <h2 className="text-2xl font-medium text-white/90 leading-none">
-              <span className="bg-gradient-to-b from-[#E040BB] to-[#7127BA] text-transparent bg-clip-text">
-                eranote
-              </span>
-            </h2>
+            <h2 className="text-2xl font-medium text-white/90 leading-none">eranote</h2>
           </div>
           <div className="flex items-center gap-4">
             <motion.button
