@@ -7,6 +7,7 @@ import { AuroraBackground } from './[components]/aurora-background';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { Sidebar } from './[components]/sidebar';
+import Image from 'next/image';
 
 export default function HomePage() {
   const { isSignedIn, isLoaded } = useUser();
@@ -64,7 +65,20 @@ export default function HomePage() {
         transition={{ duration: 1, delay: 0.2 }}
       >
         <div className="container mx-auto px-6 py-5 flex justify-between items-center">
-          <div className="text-lg font-bold tracking-widest text-white/90">SERANOTE</div>
+          <div className="flex items-end">
+            <Image
+              src="/images/seranote-logo.png"
+              alt="SERANOTE"
+              width={100}
+              height={100}
+              className="w-8 h-8"
+            />
+            <h2 className="text-2xl font-medium text-white/90 leading-none">
+              <span className="bg-gradient-to-r from-[#E040BB] to-[#7127BA] text-transparent bg-clip-text">
+                eranote
+              </span>
+            </h2>
+          </div>
           <div className="flex items-center gap-4">
             <motion.button
               className="border border-white/20 text-white/80 font-medium py-2 px-5 rounded-full text-sm hover:bg-white/10 transition-colors"

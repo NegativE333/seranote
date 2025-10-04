@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 // Import the useUser and useClerk hooks
 import { useUser, useClerk } from '@clerk/nextjs';
+import Image from 'next/image';
 
 export const Sidebar = () => {
   const router = useRouter();
@@ -61,7 +62,20 @@ export const Sidebar = () => {
 
   return (
     <aside className="fixed top-0 left-0 h-full w-64 bg-black/30 backdrop-blur-lg border-r border-white/10 p-4 flex flex-col">
-      <div className="text-xl font-bold tracking-widest text-white/90 mb-10 px-2">SERANOTE</div>
+      <div className="flex items-end mb-10">
+        <Image
+          src="/images/seranote-logo.png"
+          alt="SERANOTE"
+          width={100}
+          height={100}
+          className="w-8 h-8"
+        />
+        <h2 className="text-2xl font-medium text-white/90 leading-none">
+          <span className="bg-gradient-to-r from-[#E040BB] to-[#7127BA] text-transparent bg-clip-text">
+            eranote
+          </span>
+        </h2>
+      </div>
 
       <motion.button
         className="w-full bg-white text-black font-semibold py-2.5 px-4 rounded-lg text-sm flex items-center justify-center gap-2 mb-8"

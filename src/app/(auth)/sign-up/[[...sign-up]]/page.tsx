@@ -9,7 +9,7 @@ export default function Page() {
           layout: {
             socialButtonsPlacement: 'bottom',
             logoPlacement: 'inside',
-            logoImageUrl: '/images/seranotelogo-1.png',
+            logoImageUrl: '/images/seranote-logo.png',
           },
           variables: {
             borderRadius: '8px',
