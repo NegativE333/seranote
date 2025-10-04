@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
-import { ArrowLeft, Play, Pause, MusicIcon, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Play, Pause, MusicIcon, MessageCircle, ArrowUp } from 'lucide-react';
 import { urlFor } from '@/lib/sanity';
 import LoadingComponent from './loading-component';
 import { ErrorComponent } from './error-component';
@@ -84,6 +84,7 @@ export default function SeranoteDetailPage() {
   const [currentTime, setCurrentTime] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [isClipFinished, setIsClipFinished] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
   // Remove old message state - will use hook instead
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -136,6 +137,25 @@ export default function SeranoteDetailPage() {
       markAsRead();
     }
   }, [messages.length, userEmail, markAsRead]);
+
+  // Handle scroll to show/hide back to top button
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      setShowBackToTop(scrollTop > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Back to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   const fetchSongData = async (songId: string) => {
     try {
@@ -452,10 +472,34 @@ export default function SeranoteDetailPage() {
           </div>
         </div>
 
+        {/* Back to Top Button */}
+        {/* {showBackToTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={scrollToTop}
+            className="fixed bottom-20 right-[50%] z-20 p-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+          >
+            <ArrowUp className="w-5 h-5" />
+          </motion.button>
+        )} */}
+
         {/* Fixed Message Input at Bottom */}
         {user && (
-          <div className="fixed bottom-2 left-0 right-0 bg-black/90 backdrop-blur-sm border-t border-white/10 p-4 z-10 max-w-4xl ml-72 rounded-md">
-            <div className="">
+          <div className="fixed bottom-2 left-0 right-0 z-10 max-w-4xl ml-72">
+            {showBackToTop && (
+            <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={scrollToTop}
+            className="p-1 bg-gray-400/10 text-white/50 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-120 relative bottom-2 left-[50%] -translate-x-1/2"
+          >
+            <ArrowUp className="w-3 h-3" />
+          </motion.button>
+            )}
+            <div className="bg-black/90 backdrop-blur-sm border-t border-white/10 p-4 rounded-md">
               <MessageInput onSendMessage={sendMessage} isSending={isSendingMessage} />
             </div>
           </div>
