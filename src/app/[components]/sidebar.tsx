@@ -71,7 +71,7 @@ export const Sidebar = () => {
           className="w-8 h-8"
         />
         <h2 className="text-2xl font-medium text-white/90 leading-none">
-          <span className="bg-gradient-to-r from-[#E040BB] to-[#7127BA] text-transparent bg-clip-text">
+          <span className="bg-gradient-to-b from-[#E040BB] to-[#7127BA] text-transparent bg-clip-text">
             eranote
           </span>
         </h2>
