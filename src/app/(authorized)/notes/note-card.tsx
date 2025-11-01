@@ -1,19 +1,22 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { LinkIcon, TrashIcon, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 export const NoteCard = ({
   note,
   index,
   unreadCount = 0,
+  onDelete,
 }: {
   note: any;
   index: number;
   unreadCount?: number;
+  onDelete?: (noteId: string) => void;
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
-  console.log(note);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const cardVariants = {
     initial: { opacity: 0, y: 20 },
@@ -53,6 +56,70 @@ export const NoteCard = ({
     } else {
       setIsLocked(true);
       setIsExpanded(true);
+    }
+  };
+
+  const handleCopyLink = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click event
+    e.preventDefault();
+    
+    if (!note.accessToken && !note.id) {
+      toast.error('No link available to copy');
+      return;
+    }
+
+    const shareToken = note.accessToken || note.id;
+    const shareUrl = `${window.location.origin}/share/${shareToken}`;
+    
+    try {
+      // Try modern clipboard API first
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success('Link copied to clipboard!');
+      } else {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = shareUrl;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        toast.success('Link copied to clipboard!');
+      }
+    } catch (error) {
+      console.error('Error copying link:', error);
+      toast.error('Failed to copy link. Please try again.');
+    }
+  };
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click event
+    
+    if (!note.id || !onDelete) return;
+    
+    if (!confirm('Are you sure you want to delete this seranote? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      const response = await fetch(`/api/seranotes/${note.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete seranote');
+      }
+
+      onDelete(note.id);
+    } catch (error) {
+      console.error('Error deleting seranote:', error);
+      alert('Failed to delete seranote. Please try again.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -117,12 +184,25 @@ export const NoteCard = ({
               <p className="text-sm text-gray-400 pt-4 border-t border-white/10">{note.snippet}</p>
               <div className="mt-4 flex justify-between items-center">
                 <div className="flex">
-                  <button className="ml-auto p-2 rounded-full text-gray-400 hover:text-white hover:bg-white/10">
-                    <LinkIcon className="w-4 h-4" />
-                  </button>
-                  <button className="p-2 rounded-full text-gray-400 hover:text-white hover:bg-white/10">
-                    <TrashIcon className="w-4 h-4" />
-                  </button>
+                  {onDelete && (
+                    <>
+                      <button
+                        onClick={handleCopyLink}
+                        className="ml-auto p-2 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                        title="Copy link"
+                      >
+                        <LinkIcon className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        className="p-2 rounded-full text-gray-400 hover:text-red-400 hover:bg-red-500/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        title="Delete note"
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </motion.div>

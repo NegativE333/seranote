@@ -15,7 +15,7 @@ export default function AuthorizedLayout({ children }: { children: React.ReactNo
           <div>{children}</div>
         </div>
       </main>
-      <Toaster />
+      <Toaster position="top-right" style={{ zIndex: 9999 }} />
     </div>
   );
 }

@@ -82,6 +82,15 @@ export default function NotesPage() {
     router.push(`/notes/${noteId}`);
   };
 
+  const handleDeleteNote = (noteId: string) => {
+    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
+    // Optionally refresh analytics after deletion
+    fetch('/api/analytics?type=sent')
+      .then((res) => res.json())
+      .then((data) => setAnalytics(data))
+      .catch((err) => console.error('Error refreshing analytics:', err));
+  };
+
   const hasNotes = notes.length > 0;
 
   if (isLoading) {
@@ -144,10 +153,12 @@ export default function NotesPage() {
                   snippet: note.message,
                   date: moment(note.createdAt).format('MMM D, YYYY'),
                   receiverEmail: note.receiverEmail,
+                  accessToken: note.accessToken,
                   views: 0,
                 }}
                 index={index}
                 unreadCount={note.unreadCount}
+                onDelete={handleDeleteNote}
               />
             </div>
           ))}

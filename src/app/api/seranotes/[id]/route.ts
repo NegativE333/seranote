@@ -54,3 +54,54 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { userId } = await auth();
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const user = await currentUser();
+    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+
+    const primaryEmail = user.emailAddresses[0]?.emailAddress;
+    if (!primaryEmail) return NextResponse.json({ error: 'User email not found' }, { status: 400 });
+
+    // Await params in Next.js 15
+    const { id } = await params;
+
+    // First verify the user owns this seranote
+    const seranote = await prisma.seranote.findFirst({
+      where: {
+        id: id,
+        OR: [{ senderEmail: primaryEmail }, { receiverEmail: primaryEmail }],
+      },
+    });
+
+    if (!seranote) {
+      return NextResponse.json({ error: 'Seranote not found or access denied' }, { status: 404 });
+    }
+
+    // Delete related records first (due to foreign key constraints)
+    await prisma.userSeranoteRead.deleteMany({
+      where: { seranoteId: id },
+    });
+
+    await prisma.reaction.deleteMany({
+      where: { seranoteId: id },
+    });
+
+    await prisma.message.deleteMany({
+      where: { seranoteId: id },
+    });
+
+    // Finally delete the seranote
+    await prisma.seranote.delete({
+      where: { id: id },
+    });
+
+    return NextResponse.json({ success: true, message: 'Seranote deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting seranote:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
