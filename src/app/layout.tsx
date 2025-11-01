@@ -26,7 +26,7 @@ export default function RootLayout({
         },
       }}
     >
-      <html lang="en" suppressHydrationWarning>
+      <html lang="en" suppressHydrationWarning className="dark">
         <body className={`${inter.className} antialiased`}>
           <Providers>
             <PusherProvider>{children}</PusherProvider>

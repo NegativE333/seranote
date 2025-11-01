@@ -116,10 +116,10 @@ export default function NotesPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <h1 className="text-3xl font-bold text-white mb-2">Sent Notes</h1>
-      <p className="text-gray-400 mb-8">Your personal collection of unspoken words and melodies.</p>
+      <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Sent Notes</h1>
+      <p className="text-sm sm:text-base text-gray-400 mb-6 sm:mb-8">Your personal collection of unspoken words and melodies.</p>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8 max-w-[1000px]">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8 max-w-[1000px]">
         <AnalyticsCard
           title="Total Seranotes"
           label="sent"

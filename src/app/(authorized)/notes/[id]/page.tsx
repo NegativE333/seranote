@@ -358,13 +358,14 @@ export default function SeranoteDetailPage() {
           className="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
-          Back to Notes
+          <span className="hidden sm:inline">Back to Notes</span>
+          <span className="sm:hidden">Back</span>
         </button>
 
         {/* Scrollable Content Area */}
         <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500/30 scrollbar-track-transparent hover:scrollbar-thumb-purple-500/50 pb-20">
           {song && (
-            <div className="mb-6 flex justify-between">
+            <div className="mb-6 flex justify-between flex-wrap gap-4">
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <svg className="w-28 h-28 transform -rotate-90" viewBox="0 0 120 120">
@@ -487,7 +488,7 @@ export default function SeranoteDetailPage() {
 
         {/* Fixed Message Input at Bottom */}
         {user && (
-          <div className="fixed bottom-2 left-0 right-0 z-10 max-w-4xl ml-72">
+          <div className="fixed bottom-2 left-0 right-0 z-10 max-w-4xl lg:left-64">
             {showBackToTop && (
             <motion.button
             initial={{ opacity: 0, scale: 0.8 }}
