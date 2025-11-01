@@ -28,7 +28,7 @@ export default function AuthorizedLayout({ children }: { children: React.ReactNo
   return (
     <div className="min-h-screen bg text-gray-300 font-sans antialiased">
       <AuroraBackground />
-      
+
       {/* Mobile Top Navbar */}
       <motion.nav
         initial={{ y: -100 }}
@@ -44,7 +44,7 @@ export default function AuthorizedLayout({ children }: { children: React.ReactNo
             height={100}
             className="w-6 h-6"
           />
-          <h2 className="text-xl font-medium text-white/90 leading-none ml-1">eranote</h2>
+          <h2 className="text-xl font-medium text-white/90 leading-none mt-2">eranote</h2>
         </div>
 
         {/* Menu Toggle Button */}
@@ -53,11 +53,7 @@ export default function AuthorizedLayout({ children }: { children: React.ReactNo
           className="bg-white/10 hover:bg-white/20 p-2 rounded-lg text-white transition-colors"
           aria-label="Toggle menu"
         >
-          {isSidebarOpen ? (
-            <XIcon className="w-6 h-6" />
-          ) : (
-            <MenuIcon className="w-6 h-6" />
-          )}
+          {isSidebarOpen ? <XIcon className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
         </button>
       </motion.nav>
 
@@ -77,9 +73,9 @@ export default function AuthorizedLayout({ children }: { children: React.ReactNo
         )}
       </AnimatePresence>
 
-      <Sidebar 
-        isOpen={isMobile ? isSidebarOpen : undefined} 
-        onClose={isMobile ? () => setIsSidebarOpen(false) : undefined} 
+      <Sidebar
+        isOpen={isMobile ? isSidebarOpen : undefined}
+        onClose={isMobile ? () => setIsSidebarOpen(false) : undefined}
       />
 
       <main className="relative z-10 lg:ml-64 pt-16 lg:pt-0">
@@ -87,11 +83,7 @@ export default function AuthorizedLayout({ children }: { children: React.ReactNo
           <div>{children}</div>
         </div>
       </main>
-      <Toaster 
-        position="top-right"
-        offset={isMobile ? 64 : 16}
-        style={{ zIndex: 9999 }}
-      />
+      <Toaster position="top-right" offset={isMobile ? 64 : 16} style={{ zIndex: 9999 }} />
     </div>
   );
 }
