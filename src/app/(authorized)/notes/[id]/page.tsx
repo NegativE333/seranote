@@ -109,7 +109,17 @@ export default function SeranoteDetailPage() {
       try {
         setIsLoading(true);
         const response = await fetch(`/api/seranotes/${params.id}`);
-        if (!response.ok) throw new Error('Failed to fetch seranote');
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          if (response.status === 403) {
+            throw new Error(errorData.error || 'Access denied. You do not have permission to view this note.');
+          } else if (response.status === 404) {
+            throw new Error(errorData.error || 'Seranote not found.');
+          } else {
+            throw new Error(errorData.error || 'Failed to fetch seranote');
+          }
+        }
 
         const data = await response.json();
         setSeranote(data);

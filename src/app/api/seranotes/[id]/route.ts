@@ -16,11 +16,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     // Await params in Next.js 15
     const { id } = await params;
 
-    const seranote = await prisma.seranote.findFirst({
-      where: {
-        id: id,
-        OR: [{ senderEmail: primaryEmail }, { receiverEmail: primaryEmail }],
-      },
+    // First fetch the seranote without filtering by email
+    const seranote = await prisma.seranote.findUnique({
+      where: { id: id },
       include: {
         messages: {
           include: {
@@ -46,6 +44,50 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
     if (!seranote) {
       return NextResponse.json({ error: 'Seranote not found' }, { status: 404 });
+    }
+
+    // Check if user is sender or receiver
+    const isSender = seranote.senderEmail === primaryEmail;
+    const isReceiver = seranote.receiverEmail === primaryEmail;
+
+    // If user is neither sender nor receiver, check if we should auto-assign as receiver
+    if (!isSender && !isReceiver) {
+      // If receiverEmail is null and user is not the sender, set user as receiver
+      if (!seranote.receiverEmail) {
+        await prisma.seranote.update({
+          where: { id: id },
+          data: { receiverEmail: primaryEmail },
+        });
+        // Refetch the seranote with all includes after update
+        const updatedSeranote = await prisma.seranote.findUnique({
+          where: { id: id },
+          include: {
+            messages: {
+              include: {
+                sender: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                  },
+                },
+              },
+              orderBy: { createdAt: 'asc' },
+            },
+            sender: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        });
+        return NextResponse.json(updatedSeranote);
+      } else {
+        // User is not sender, receiver is set to someone else, deny access
+        return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+      }
     }
 
     return NextResponse.json(seranote);

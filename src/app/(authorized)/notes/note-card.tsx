@@ -63,13 +63,13 @@ export const NoteCard = ({
     e.stopPropagation(); // Prevent card click event
     e.preventDefault();
     
-    if (!note.accessToken && !note.id) {
+    if (!note.id) {
       toast.error('No link available to copy');
       return;
     }
 
-    const shareToken = note.accessToken || note.id;
-    const shareUrl = `${window.location.origin}/share/${shareToken}`;
+    const shareToken = note.id;
+    const shareUrl = `${window.location.origin}/notes/${shareToken}`;
     
     try {
       // Try modern clipboard API first
