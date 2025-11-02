@@ -10,12 +10,19 @@ import {
   UserCog,
   LogOut,
   SendIcon,
+  MenuIcon,
+  XIcon,
 } from 'lucide-react';
 // Import the useUser and useClerk hooks
 import { useUser, useClerk } from '@clerk/nextjs';
 import Image from 'next/image';
 
-export const Sidebar = () => {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export const Sidebar = ({ isOpen: controlledIsOpen, onClose }: SidebarProps = {}) => {
   const router = useRouter();
   const pathname = usePathname();
   const { user, isLoaded } = useUser();
@@ -40,13 +47,18 @@ export const Sidebar = () => {
     label,
     icon,
     path,
+    onClick,
   }: {
     label: string;
     icon: React.ReactNode;
     path: string;
+    onClick?: () => void;
   }) => (
     <button
-      onClick={() => router.push(path)}
+      onClick={() => {
+        router.push(path);
+        onClick?.();
+      }}
       className={`flex items-center w-full text-left px-4 py-2.5 rounded-lg transition-colors duration-200 ${
         pathname === path
           ? 'bg-white/10 text-white'
@@ -58,8 +70,25 @@ export const Sidebar = () => {
     </button>
   );
 
+  const handleNavClick = () => {
+    if (onClose) {
+      onClose();
+    }
+  };
+
+  // On desktop (lg+), always show sidebar. On mobile, use controlled state
+  const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : true;
+
   return (
-    <aside className="fixed top-0 left-0 h-full w-64 bg-black/30 backdrop-blur-lg border-r border-white/10 p-4 flex flex-col">
+    <>
+      <motion.aside
+        initial={false}
+        animate={{
+          x: isOpen ? 0 : '-100%',
+        }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        className="fixed top-0 left-0 h-screen w-64 bg-black/30 backdrop-blur-lg border-r border-white/10 p-4 flex flex-col z-[100] lg:translate-x-0 lg:z-auto"
+      >
       <div className="flex items-end mb-8">
         <Image
           src="/images/seranote-logo-white.png"
@@ -75,19 +104,37 @@ export const Sidebar = () => {
         className="w-full bg-white text-black font-semibold py-2.5 px-4 rounded-lg text-sm flex items-center justify-center gap-2 mb-8"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => router.push('/create')}
+        onClick={() => {
+          router.push('/create');
+          handleNavClick();
+        }}
       >
         <PlusIcon className="w-5 h-5" />
         New Note
       </motion.button>
 
       <nav className="flex flex-col gap-2">
-        <NavItem label="Sent Notes" icon={<SendIcon className="w-5 h-5" />} path="/notes" />
-        <NavItem label="Received Notes" icon={<InboxIcon className="w-5 h-5" />} path="/received" />
+        <NavItem 
+          label="Sent Notes" 
+          icon={<SendIcon className="w-5 h-5" />} 
+          path="/notes" 
+          onClick={handleNavClick}
+        />
+        <NavItem 
+          label="Received Notes" 
+          icon={<InboxIcon className="w-5 h-5" />} 
+          path="/received" 
+          onClick={handleNavClick}
+        />
       </nav>
 
       <div className="mt-auto">
-        <NavItem label="Settings" icon={<SettingsIcon className="w-5 h-5" />} path="/settings" />
+        <NavItem 
+          label="Settings" 
+          icon={<SettingsIcon className="w-5 h-5" />} 
+          path="/settings" 
+          onClick={handleNavClick}
+        />
         <div className="border-t border-white/10 my-4"></div>
 
         {/* Custom User Profile Section */}
@@ -150,6 +197,7 @@ export const Sidebar = () => {
           </AnimatePresence>
         </div>
       </div>
-    </aside>
+    </motion.aside>
+    </>
   );
 };

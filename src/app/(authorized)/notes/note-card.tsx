@@ -142,23 +142,23 @@ export const NoteCard = ({
         transition={{ duration: 0.3 }}
       />
 
-      <div className="p-4 pl-6">
-        <div className="flex justify-between">
-          <div className="flex-1">
-            <div className="flex items-center gap-3">
-              <h3 className="text-lg font-semibold text-white/90">{note.title}</h3>
+      <div className="p-3 sm:p-4 pl-4 sm:pl-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <h3 className="text-base sm:text-lg font-semibold text-white/90 truncate">{note.title}</h3>
             </div>
             {note.senderEmail ? (
-              <p className="text-xs text-white/50 mt-1">
+              <p className="text-xs text-white/50 mt-1 truncate">
                 from {note.senderEmail}
               </p>
             ) : note.receiverEmail ? (
-              <p className="text-xs text-white/50 mt-1">
+              <p className="text-xs text-white/50 mt-1 truncate">
                 to {note.receiverEmail}
               </p>
             ) : null}
           </div>
-          <div className="flex flex-col justify-between items-end text-gray-400">
+          <div className="flex flex-row sm:flex-col sm:justify-between sm:items-end items-center gap-2 text-gray-400">
             {unreadCount > 0 && (
               <div className="flex items-center gap-1">
                 <MessageCircle className="w-4 h-4 text-purple-400" />

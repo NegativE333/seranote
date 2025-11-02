@@ -153,7 +153,7 @@ export default function SeranoteDetailPage() {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
   };
 
@@ -355,7 +355,7 @@ export default function SeranoteDetailPage() {
       >
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors"
+          className="hidden md:flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Notes
@@ -364,8 +364,8 @@ export default function SeranoteDetailPage() {
         {/* Scrollable Content Area */}
         <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500/30 scrollbar-track-transparent hover:scrollbar-thumb-purple-500/50 pb-20">
           {song && (
-            <div className="mb-6 flex justify-between">
-              <div className="flex items-center gap-4">
+            <div className="mb-6 flex justify-between flex-wrap lg:gap-4">
+              <div className="flex items-center gap-2 lg:gap-4 max-w-[95%] lg:max-w-[75%]">
                 <div className="relative">
                   <svg className="w-28 h-28 transform -rotate-90" viewBox="0 0 120 120">
                     <circle
@@ -424,10 +424,12 @@ export default function SeranoteDetailPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-1.5">
-                  <h3 className="text-xl font-semibold text-white leading-none">{song.title}</h3>
-                  <p className="text-sm text-white/90 leading-none">{song.artist}</p>
-                  <p className="text-sm text-white/80 leading-none">{song.album}</p>
+                <div className="flex flex-col gap-1.5 min-w-0">
+                  <h3 className="text-xl font-semibold text-white leading-none truncate">
+                    {song.title}
+                  </h3>
+                  <p className="text-sm text-white/90 leading-none truncate">{song.artist}</p>
+                  <p className="text-sm text-white/80 leading-none truncate">{song.album}</p>
                   <div className="text-xs text-white/70">
                     <span className="font-medium">
                       {isClipFinished
@@ -442,7 +444,7 @@ export default function SeranoteDetailPage() {
                   </div>
                 </div>
               </div>
-              <p className="text-xs text-white/80 leading-none mt-3">
+              <p className="hidden md:block text-xs text-white/80 leading-none mt-3">
                 {moment(seranote.createdAt).format('Do MMM YYYY, h:mm A')}
               </p>
             </div>
@@ -454,7 +456,10 @@ export default function SeranoteDetailPage() {
           </div>
 
           {/* Messages Section */}
-          <div className="mt-8 pt-4 border-t border-white/10">
+          <p className="block md:hidden text-xs text-white/80 leading-none md:mt-3">
+            {moment(seranote.createdAt).format('Do MMM YYYY, h:mm A')}
+          </p>
+          <div className="mt-2 md:mt-8 pt-4 border-t border-white/10">
             <div className="flex items-center gap-2 mb-6">
               <MessageCircle className="w-5 h-5 text-purple-400" />
               <h2 className="text-xl font-semibold text-white">Conversation</h2>
@@ -472,32 +477,19 @@ export default function SeranoteDetailPage() {
           </div>
         </div>
 
-        {/* Back to Top Button */}
-        {/* {showBackToTop && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            onClick={scrollToTop}
-            className="fixed bottom-20 right-[50%] z-20 p-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
-          >
-            <ArrowUp className="w-5 h-5" />
-          </motion.button>
-        )} */}
-
         {/* Fixed Message Input at Bottom */}
         {user && (
-          <div className="fixed bottom-2 left-0 right-0 z-10 max-w-4xl ml-72">
+          <div className="fixed bottom-0 lg:bottom-2 left-0 right-0 z-10 max-w-4xl lg:left-68">
             {showBackToTop && (
-            <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            onClick={scrollToTop}
-            className="p-1 bg-gray-400/10 text-white/50 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-120 relative bottom-2 left-[50%] -translate-x-1/2"
-          >
-            <ArrowUp className="w-3 h-3" />
-          </motion.button>
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                onClick={scrollToTop}
+                className="p-1 bg-gray-400/10 text-white/50 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-120 relative bottom-2 left-[50%] -translate-x-1/2"
+              >
+                <ArrowUp className="w-3 h-3" />
+              </motion.button>
             )}
             <div className="bg-black/90 backdrop-blur-sm border-t border-white/10 p-4 rounded-md">
               <MessageInput onSendMessage={sendMessage} isSending={isSendingMessage} />
